@@ -1,0 +1,11 @@
+[Mon Jan 30 20:49:46.492338 2017] [ssl:warn] [pid 3197:tid 140316391434048] AH01909: localhost:443:0 server certificate does NOT include an ID which matches the server name
+[Mon Jan 30 20:49:46.550421 2017] [ssl:warn] [pid 3198:tid 140316391434048] AH01909: localhost:443:0 server certificate does NOT include an ID which matches the server name
+[Mon Jan 30 20:49:46.572478 2017] [mpm_event:notice] [pid 3198:tid 140316391434048] AH00489: Apache/2.4.23 (Unix) OpenSSL/1.0.2j configured -- resuming normal operations
+[Mon Jan 30 20:49:46.572504 2017] [core:notice] [pid 3198:tid 140316391434048] AH00094: Command line: '/opt/bitnami/apache2/bin/httpd.bin -f /opt/bitnami/apache2/conf/httpd.conf'
+[Mon Jan 30 22:00:25.817750 2017] [pagespeed:warn] [pid 4177:tid 140316135380736] [mod_pagespeed 1.9.32.14-0 @4177] Failed to read cache clean timestamp /opt/bitnami/apache2/var/cache/mod_pagespeed/!clean!time!.  Doing an extra cache clean to be safe.
+[Tue Jan 31 12:16:02.615684 2017] [mpm_event:notice] [pid 3198:tid 140316391434048] AH00491: caught SIGTERM, shutting down
+[Tue Jan 31 12:16:06.638330 2017] [ssl:warn] [pid 6748:tid 140566441133888] AH01909: localhost:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 31 12:16:06.676755 2017] [ssl:warn] [pid 6749:tid 140566441133888] AH01909: localhost:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 31 12:16:06.690545 2017] [mpm_event:notice] [pid 6749:tid 140566441133888] AH00489: Apache/2.4.23 (Unix) OpenSSL/1.0.2j configured -- resuming normal operations
+[Tue Jan 31 12:16:06.690571 2017] [core:notice] [pid 6749:tid 140566441133888] AH00094: Command line: '/opt/bitnami/apache2/bin/httpd.bin -f /opt/bitnami/apache2/conf/httpd.conf'
+[Tue Jan 31 12:22:36.122266 2017] [autoindex:error] [pid 7092:tid 140566008354560] [client 144.82.8.63:55431] AH01276: Cannot serve directory /opt/bitnami/apache2/htdocs/: No matching DirectoryIndex (index.html,index.php) found, and server-generated directory index forbidden by Options directive
