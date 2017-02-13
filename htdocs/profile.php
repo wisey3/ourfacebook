@@ -271,7 +271,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 });
      
 </script>    
-     <!--Put photos stuff here-->
+    
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
       Photos
  
@@ -306,14 +306,15 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       
       
    <?php
-   $t = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$_SESSION['id']."' OR user_2 = '".$_SESSION['id']."') AND status = 'accepted'");
+   $t = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$loadprofile."' OR user_2 = '".$loadprofile."') AND status = 'accepted'");
    //echo $t->num_rows;
    $u = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$_SESSION['id']."' OR user_2 = '".$_SESSION['id']."') AND status = 'pending' AND last_action != '".$_SESSION['id']."'");
   //echo $u->num_rows;
-   if($loadprofile == $_SESSION['id'] && ($t->num_rows >0 || $u->num_rows >0)){
+  if($t->num_rows >0 ||($loadprofile == $_SESSION['id'] && $u->num_rows >0)){
    ?>
+    
       <div class="jumbotron col-md-3" style="padding:10px 20px;" id="friends">
-      <?php if($u->num_rows >0){ ?>
+      <?php if( $loadprofile == $_SESSION['id'] && $u->num_rows >0){ ?>
       <h4>Pending Friend Requests</h4>
       <?php
 	
@@ -334,6 +335,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 		 }
 		 	
 }
+
     if($t->num_rows >0){
  ?> 
       
@@ -341,7 +343,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       <?php
 	
 		 while($row3 = mysqli_fetch_array($t,MYSQLI_ASSOC)){
-		 	if($row3["user_1"] == $_SESSION['id']){
+		 	if($row3["user_1"] == $loadprofile){
 		 		$friendlist = $row3["user_2"];
 		 	}
 		 	else{
@@ -355,7 +357,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 		 	echo "<br>";
 		 		 	
 		 }
-  }   
+    }
  ?>    
       </div>
 <?php } ?>
