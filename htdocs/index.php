@@ -122,7 +122,7 @@
 
                  
                     
-                    <h4 style="color:red" class="payment-errors text-center"></h4>
+                    <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>
           
                 
                 </form>
@@ -139,36 +139,39 @@
                     Sign Up!
                 </button>
                 
-                <script>
+<script>
           var $btn = $('#submit');
        $btn.on('click', function(e) {   
-    
-$btn.button('progress');
+       //$btn.prop('disabled', true);
+//$btn.button('progress');
   
-    
-
-
     $.ajax({
            type: "POST",
            url: "register.php",
            data: $("#form").serialize(), // serializes the form's elements.
-          error : function(data) 
-                {
-                
-                alert(data);
-				$btn.prop('disabled', false);
-                },
-           success: function(data)
-           {
-           $btn.addClass('btn-success').removeClass('btn-primary');
-            $btn.button('success');
-              setTimeout(function() {
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.name) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.name); //Throw relevant error
+                                }
+                                else if (data.errors.password) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.password); //Throw relevant error
+                                }
+                                else if (data.errors.repeat) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.repeat); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.payment-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
                 $('#signup').modal('hide');
             }, 350);
-               alert(data); // show response from the php script.
-           }
-            
-         });
+                                }
+                            }
+                            
+      
+        });
 
     e.preventDefault(); // avoid to execute the actual submit of the form.
 
@@ -181,9 +184,7 @@ $btn.button('progress');
         </div>
     </div>
 </div>
-     <script src="js/plugins.js"></script> 
-        <script src="js/jquery.countdown.min.js"></script> 
-        <script src="js/main.js"></script>
+    
          <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
   </body>
