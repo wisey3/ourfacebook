@@ -127,58 +127,7 @@ function getStates(value) {
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron col-md-3" style="padding:10px 20px;">
-      
-      <?php
-
-    $r = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$loadprofile."'");
-    $row = mysqli_fetch_array($r,MYSQLI_ASSOC);
-   
-	$name = $row['name'];
-	$sex= $row['sex'];
-	$location = $row['location'];
-	$join = date('d / m / Y', strtotime($row['date_joined']));
-	$dob = $row['dob'];
-	$email = $row['email'];
-	$date1 = new Datetime("now");
-	$date2 = new DateTime($dob);
-	$interval = $date1->diff($date2);
-	
-    $age =  "" . $interval->y. " years old";
-     
-     
-     if($loadprofile != $_SESSION['id']){
-     	if($loadprofile < $_SESSION['id']){
-     		$smaller = $loadprofile;
-     		$bigger = $_SESSION['id'];
-     	}
-     	else{
-     		$smaller = $_SESSION['id'];
-     		$bigger = $loadprofile;
-     	}
-     
-    $s = mysqli_query($dbc,"SELECT * FROM Relationships WHERE user_1 = '".$smaller."' AND user_2 = '".$bigger."'");
-    if($s->num_rows ==0){
-    echo '<button id="add" style="margin-bottom:20px;" class = "btn-lg btn-primary" role="button">Add Friend</button>';
-    }
-    else{
-    	$row2 = mysqli_fetch_array($s,MYSQLI_ASSOC);
-		$status = $row2['status'];
-		$last_action = $row2['last_action'];
-		if($status == "accepted"){
-		echo '<h4 style="color:green"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Friends</h4>';
-		}
-    	else if($status == "pending"){
-    	echo '<h4 style="color:orange"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Friend Request Pending</h4>';
-    	}
-    	else if($status == "blocked"){
-    	echo '<h4 style="color:red"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Blocked</h4>';
-    	}
-    	
-    	}   
-	}
-	?>
- 
- <script>
+   <script>
 $(document).ready(function() {
     $("#add").click(function(){ //Trigger on form submit
         var user1 =  <?php echo $_SESSION['id'];?>;
@@ -234,9 +183,105 @@ $(document).ready(function() {
     });
 });
 
- </script>
+ </script>    
+      <?php
 
-        <h3><?php echo $name; ?></h3>
+    $r = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$loadprofile."'");
+    $row = mysqli_fetch_array($r,MYSQLI_ASSOC);
+   
+	$name = $row['name'];
+	$sex= $row['sex'];
+	$location = $row['location'];
+	$join = date('d / m / Y', strtotime($row['date_joined']));
+	$dob = $row['dob'];
+	$email = $row['email'];
+	$privacy = $row['privacy'];
+	$date1 = new Datetime("now");
+	$date2 = new DateTime($dob);
+	$interval = $date1->diff($date2);
+	
+    $age =  "" . $interval->y. " years old";
+     
+     
+     if($loadprofile != $_SESSION['id']){
+     	if($loadprofile < $_SESSION['id']){
+     		$smaller = $loadprofile;
+     		$bigger = $_SESSION['id'];
+     	}
+     	else{
+     		$smaller = $_SESSION['id'];
+     		$bigger = $loadprofile;
+     	}
+     
+    $s = mysqli_query($dbc,"SELECT * FROM Relationships WHERE user_1 = '".$smaller."' AND user_2 = '".$bigger."'");
+    if($s->num_rows ==0){
+    $status = "";
+    echo '<button id="add" style="margin-bottom:20px;" class = "btn-lg btn-primary" role="button">Add Friend</button>';
+    }
+    else{
+    	$row2 = mysqli_fetch_array($s,MYSQLI_ASSOC);
+		$status = $row2['status'];
+		$last_action = $row2['last_action'];
+		if($status == "accepted"){
+		echo '<h4 style="color:green"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Friends</h4>';
+		}
+    	else if($status == "pending"){
+    	echo '<h4 style="color:orange"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Friend Request Pending</h4>';
+    	}
+    	else if($status == "blocked"){
+    	echo '<h4 style="color:red"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Blocked</h4>';
+    	}
+    	
+    	}   
+    	 ?>
+        
+        
+        <?php 
+        $arrs = array();
+        $arrb = array();
+        $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
+        $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
+         while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
+         if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
+		 	if($rowsm["user_1"] != $smaller){
+		 	
+		 		array_push($arrs,$rowsm["user_1"]);
+		 	}
+		 	else{
+		 		array_push($arrs,$rowsm["user_2"]);
+		 		}
+		 	}
+		 }
+		while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
+         if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
+		 	if($rowbi["user_1"] != $bigger){
+		 	
+		 		array_push($arrb,$rowbi["user_1"]);
+		 	}
+		 	else{
+		 		array_push($arrb,$rowbi["user_2"]);
+		 		}
+		 	}
+		 }
+		$mutual = sizeof(array_intersect($arrb,$arrs));
+        }
+        if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0))){
+         echo "<h3>$name</h3>";
+         if($status=="pending"){
+         echo"<p>If $name accepts your friend request, you will be able to see their full profile.</p>";
+         }
+        else{
+        echo "<p>Add $name as a friend to view full profile.</p>";
+        }
+        }
+        else{
+       
+	
+	?>
+ 
+
+		
+         <h3><?php echo $name; ?></h3>
         <p>Lives in <?php echo $location; ?></p>
         <p>Gender <?php echo $sex; ?></p>
         <p>Joined <?php echo $join; ?></p>
@@ -344,7 +389,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     if($t->num_rows >0){
  ?> 
       
-      <h4>Friends</h4>
+      <h4>Friends  <span style="font-weight:200"> <?php if(isset($mutual)){ if($loadprofile != $_SESSION['id']){
+      echo "($mutual mutual";}  if($mutual>1){echo "friends)";}else{echo " friend)";}}?></span></h4>
       <?php
 	
 		 while($row3 = mysqli_fetch_array($t,MYSQLI_ASSOC)){
@@ -363,9 +409,12 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 		 		 	
 		 }
     }
+    
+
  ?>    
       </div>
 <?php } 
+   }//end
 
   $j = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$_SESSION['id']."'");
     $rowp = mysqli_fetch_array($j,MYSQLI_ASSOC);
@@ -376,7 +425,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 	$emailp = $rowp['email'];
 	//$join = date('d / m / Y', strtotime($row['date_joined']));
 	//$dob = $row['dob'];
-	$emailp = $rowp['email'];
+	$privacyp = $rowp['privacy'];
 	//$date1 = new Datetime("now");
 	//$date2 = new DateTime($dob);
 	//$interval = $date1->diff($date2);
@@ -623,46 +672,80 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header text-center">
-            Change Password
+            Who can see your profile?
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <div class="modal-body">
-                <form id="form" method="POST" class="form-horizontal" role="form">
+                <form id="privacyform" method="POST" class="form-horizontal" role="form">
                 
                          <div class="form-group">
-                            <div class="col-sm-12">
-                           
+                            <div class="col-xs-12">
+                         
                               <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                                <input id="oldpassword" name="oldpassword" class="form-control" type="password" size="16" placeholder="Current Password" required/>
-                            </div>
+                                <span class="input-group-addon"><i class="fa fa-eye-slash"></i></span>
+       
+                                <select class="form-control" name ="privacy" id="privacy" required>
+  								<option value ="3" <?php if($privacyp==3){echo 'selected';}?>>Everyone</option>
+  								<option value="2" <?php if($privacyp==2){echo 'selected';}?>>Friends of Friends</option>
+  								<option value ="1" <?php if($privacyp==1){echo 'selected';}?>>Friends Only</option>
+								</select>
+								</div>
+                      
                         </div>
-                    </div>    
-                       <div class="form-group">
-                            <div class="col-sm-12">
-                           
-                              <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                                <input id="newpassword" name="newpassword" class="form-control" type="password" size="16" placeholder="New Password" required/>
-                            </div>
-                        </div>
-                    </div>                       
+                        </div>                   
                     
-                    <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>
+                    <h3 id="errormessage" style="color:red" class="privacy-errors text-center"></h3>
           
                 
                 </form>
 
-<script>$.validate();</script>
+
             <div class="modal-footer">
             
-                <button id="submit" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group"
-                           data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>"
-                           data-success-text="<span class='glyphicon glyphicon-ok'></span>"
+                <button id="privacysubmit" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group"
+                
                 >
                     Save
                 </button>
+                
+                       <script>
+          var $btn = $('#privacysubmit');
+       $btn.on('click', function(e) {   
+       //$btn.prop('disabled', true);
+//$btn.button('progress');
+  
+    $.ajax({
+           type: "POST",
+           url: "privacy.php",
+           data: $("#privacyform").serialize(), // serializes the form's elements.
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.oldpass) { //Returned if any error from process.php
+                                    $('.privacy-errors').fadeIn(1000).html(data.errors.privacy); //Throw relevant error
+                                }
+                              
+                            }
+                            else {
+                                    $('.privacy-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
+                $('#visibility').modal('hide');
+            }, 350);
+                                }
+                                 setTimeout(function() {
+                     $('.privacy-errors').empty();
+            }, 350);
+           
+                            }
+                            
+      
+        });
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+});
+</script>
                 </div>
           
             </div>
