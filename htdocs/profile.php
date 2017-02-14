@@ -56,6 +56,8 @@ else{
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+ <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
+             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
 
   </head>
@@ -75,20 +77,23 @@ else{
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav" style="display::after:inline">
-            <li ><a href="index.php">Home</a></li>
+            <li ><a href="index.php">Log Out</a></li>
             <li <?php if($_SESSION['id'] == $loadprofile){?>class="active"<?php }?>><a href="profile.php">My Profile</a></li>
-            <li><a href="#contact">Privacy</a></li>
+           
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
               <ul class="dropdown-menu">
               <li class="dropdown-header">Profile</li>
-                <li><a href="#">Edit Profile</a></li>
-                <li><a href="#">Change Email/Password</a></li>
-                <li><a href="#">Blog Settings</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#editinfo" >Edit Profile</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#changepassword">Change Password</a></li>
+                
+                <li><a href="#" data-toggle="modal" data-target="#delete">Delete Account</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Privacy</li>
+                <li><a href="#" data-toggle="modal" data-target="#visibility">Visibility Settings</a></li>
                 <li><a href="#">Blocking</a></li>
                 <li><a href="#">Photos</a></li>
+                <li><a href="#">Blog Settings</a></li>
               </ul>
             </li>
              
@@ -133,7 +138,7 @@ function getStates(value) {
 	$location = $row['location'];
 	$join = date('d / m / Y', strtotime($row['date_joined']));
 	$dob = $row['dob'];
-	
+	$email = $row['email'];
 	$date1 = new Datetime("now");
 	$date2 = new DateTime($dob);
 	$interval = $date1->diff($date2);
@@ -353,18 +358,317 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 		 	$n = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$friendlist."'");
 		 	$row4 = mysqli_fetch_array($n,MYSQLI_ASSOC);
 		 	$namelist = $row4['name'];
-		 	echo "$namelist";
-		 	echo "<br>";
+		 	echo '<a href="profile.php?fid='.$friendlist.'"> '.$namelist.'</a><br>';
+		 	
 		 		 	
 		 }
     }
  ?>    
       </div>
-<?php } ?>
+<?php } 
+
+  $j = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$_SESSION['id']."'");
+    $rowp = mysqli_fetch_array($j,MYSQLI_ASSOC);
+   
+	$namep = $rowp['name'];
+	$sexp= $rowp['sex'];
+	$locationp = $rowp['location'];
+	$emailp = $rowp['email'];
+	//$join = date('d / m / Y', strtotime($row['date_joined']));
+	//$dob = $row['dob'];
+	$emailp = $rowp['email'];
+	//$date1 = new Datetime("now");
+	//$date2 = new DateTime($dob);
+	//$interval = $date1->diff($date2);
+
+
+
+
+?>
     </div> <!-- /container -->
 
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<div class="modal fade" id="editinfo">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            Edit Profile Information
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
 
+            <div class="modal-body">
+                <form id="form" method="POST" class="form-horizontal" role="form">
+                         <div class="form-group">
+                        <div class="col-sm-12">
+                                       <div class="input-group">
+                                      <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                <input id="name" name="name" data-validation="length" data-validation-length="min4" class="form-control required" type="text" size="16" value="<?php echo $namep; ?>" autofocus="autofocus" required/>
+                            </div>
+                        </div>
+                
+                        </div>
+                          <div class="form-group">
+                            <div class="col-xs-6">
+                         
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-venus-mars"></i></span>
+       
+                                <select class="form-control" name ="sex" id="sex" required>
+  								<option <?php if($sexp=="Male"){echo 'selected';}?>>Male</option>
+  								<option <?php if($sexp=="Female"){echo 'selected';}?>>Female</option>
+  								<option <?php if($sexp=="Other"){echo 'selected';}?>>Other</option>
+								</select>
+                      
+                        </div>
+                        </div>
+                        <div class="col-xs-6">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-location-arrow"></i></span></span>
+                                <input id="location" name="location" data-validation="length" data-validation-length="min3"   class="form-control required" type="text" size="16" value="<?php echo $locationp; ?>" required/>
+                            </div>
+                        </div>
+                    </div
+                       </div>                  
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                                <input id="email" name="email" data-validation="email" class="form-control email" type="email" size="16" value="<?php echo $emailp; ?>" required/>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>
+          
+                
+                </form>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.8/jquery.form-validator.min.js"></script>
+<script>$.validate();</script>
+            <div class="modal-footer">
+            
+                <button id="submitedit" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group"
+                           data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>"
+                           data-success-text="<span class='glyphicon glyphicon-ok'></span>"
+                >
+                    Save
+                </button>
+                
+<script>
+          var $btn = $('#submitedit');
+       $btn.on('click', function(e) {   
+       //$btn.prop('disabled', true);
+//$btn.button('progress');
+  
+    $.ajax({
+           type: "POST",
+           url: "edit.php",
+           data: $("#form").serialize(), // serializes the form's elements.
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.name) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.name); //Throw relevant error
+                                }
+                                else if (data.errors.location) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.location); //Throw relevant error
+                                }
+                                else if (data.errors.repeat) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.repeat); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.payment-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
+                $('#editinfo').modal('hide');
+            }, 350);
+                                }
+                            }
+                            
+      
+        });
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+});
+</script>
+           </div>
+          
+            </div>
+        </div>
+        </div>
+        </div>
+<div class="modal fade" id="changepassword">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            Change Password
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form id="passform" method="POST" class="form-horizontal" role="form">
+                
+                         <div class="form-group">
+                            <div class="col-sm-12">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                <input id="oldpassword" name="oldpassword" class="form-control" type="password" size="16" placeholder="Current Password" required/>
+                            </div>
+                        </div>
+                    </div>    
+                       <div class="form-group">
+                            <div class="col-sm-12">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                <input id="newpassword" name="newpassword" class="form-control" type="password" size="16" placeholder="New Password" required/>
+                            </div>
+                        </div>
+                    </div>                       
+                    
+                    <h3 id="errormessage" style="color:red" class="pass-errors text-center"></h3>
+          
+                
+                </form>
+
+
+<script>$.validate();</script>
+            <div class="modal-footer">
+            
+                <button id="passsubmit" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group"
+                           data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>"
+                           data-success-text="<span class='glyphicon glyphicon-ok'></span>"
+                >
+                    Save
+                </button>
+                
+                
+                <script>
+          var $btn = $('#passsubmit');
+       $btn.on('click', function(e) {   
+       //$btn.prop('disabled', true);
+//$btn.button('progress');
+  
+    $.ajax({
+           type: "POST",
+           url: "password.php",
+           data: $("#passform").serialize(), // serializes the form's elements.
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.oldpass) { //Returned if any error from process.php
+                                    $('.pass-errors').fadeIn(1000).html(data.errors.oldpass); //Throw relevant error
+                                }
+                                else if (data.errors.newpass) { //Returned if any error from process.php
+                                    $('.pass-errors').fadeIn(1000).html(data.errors.newpass); //Throw relevant error
+                                }
+                                else if (data.errors.verification) { //Returned if any error from process.php
+                                    $('.pass-errors').fadeIn(1000).html(data.errors.verification); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.pass-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
+                $('#changepassword').modal('hide');
+            }, 350);
+                                }
+                            }
+                            
+      
+        });
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+});
+</script>
+                </div>
+          
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delete">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            NOTE: Deleting your account is irreversible!
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+            	<p class="text-center">Are you sure you want to delete your account?</p>
+                <form id="form" method="POST" action="delete.php" class="form-horizontal text-center" role="form">
+                
+                       
+                    
+           <button id="delete" type="submit" class="btn btn-danger"
+                         
+                >
+                   Delete Account
+           </button>
+                
+                </form>
+
+
+        
+          
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="visibility">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            Change Password
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form id="form" method="POST" class="form-horizontal" role="form">
+                
+                         <div class="form-group">
+                            <div class="col-sm-12">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                <input id="oldpassword" name="oldpassword" class="form-control" type="password" size="16" placeholder="Current Password" required/>
+                            </div>
+                        </div>
+                    </div>    
+                       <div class="form-group">
+                            <div class="col-sm-12">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                <input id="newpassword" name="newpassword" class="form-control" type="password" size="16" placeholder="New Password" required/>
+                            </div>
+                        </div>
+                    </div>                       
+                    
+                    <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>
+          
+                
+                </form>
+
+<script>$.validate();</script>
+            <div class="modal-footer">
+            
+                <button id="submit" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group"
+                           data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>"
+                           data-success-text="<span class='glyphicon glyphicon-ok'></span>"
+                >
+                    Save
+                </button>
+                </div>
+          
+            </div>
+        </div>
+    </div>
+</div>
   </body>
 </html>
 <?php
