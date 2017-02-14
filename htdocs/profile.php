@@ -263,7 +263,8 @@ $(document).ready(function() {
 		 		}
 		 	}
 		 }
-		$mutual = sizeof(array_intersect($arrb,$arrs));
+		 $mfriends = array_intersect($arrb,$arrs);
+		$mutual = sizeof($mfriends);
         }
         if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0))){
          echo "<h3>$name</h3>";
@@ -360,13 +361,39 @@ $("#sn").find("#fcircles").addClass("activejumbo");
    //echo $t->num_rows;
    $u = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$_SESSION['id']."' OR user_2 = '".$_SESSION['id']."') AND status = 'pending' AND last_action != '".$_SESSION['id']."'");
   //echo $u->num_rows;
-  if($t->num_rows >0 ||($loadprofile == $_SESSION['id'] && $u->num_rows >0)){
+  
+  
+  
+  $reclist = array();
+		$checklist = array();
+		$mq = mysqli_query($dbc,"SELECT id FROM Users WHERE location = '".$location."' AND id != '".$_SESSION['id']."'");
+		$x  = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$loadprofile."' OR user_2 = '".$loadprofile."')");
+		 while($rowcheck = mysqli_fetch_array($x,MYSQLI_ASSOC)){
+		 	if($rowcheck["user_1"] == $loadprofile){
+		 		array_push($reclist,$rowcheck["user_2"]);
+		 	}
+		 	else{
+		 			array_push($reclist,$rowcheck["user_1"]);
+		 	}
+		 }
+
+		 while(($rowm = mysqli_fetch_array($mq,MYSQLI_ASSOC))){
+		 array_push($checklist,$rowm["id"]);
+		 
+		 }
+		 $publist = array_diff($checklist,$reclist);
+  
+  
+  
+  
+  if($t->num_rows >0||sizeof($publist)||($loadprofile == $_SESSION['id'] && $u->num_rows >0)){
    ?>
     
       <div class="jumbotron col-md-3" style="padding:10px 20px;" id="friends">
-      <?php if( $loadprofile == $_SESSION['id'] && $u->num_rows >0){ ?>
-      <h4>Pending Friend Requests</h4>
-      <?php
+      <?php if( $loadprofile == $_SESSION['id']){
+      if($u->num_rows >0){
+      echo "<h4>Pending Friend Requests</h4>";
+     
 	
 		 while($row5 = mysqli_fetch_array($u,MYSQLI_ASSOC)){
 		 	if($row5["user_1"] == $_SESSION['id']){
@@ -379,18 +406,31 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 		 	$p = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$pendinglist."'");
 		 	$row6 = mysqli_fetch_array($p,MYSQLI_ASSOC);
 		 	$pendingnamelist = $row6['name'];
-		 	echo '<div class="btn-group-xs text-right"  role="group" aria-label="..."> '.$pendingnamelist.'<button style="margin-left:20px;"class = "btn btn-success accept" value = "'.$pendinglist.'" role="button">Accept</button><button  value = "'.$pendinglist.'"  class = "btn btn-danger decline" role="button">Decline</button></div>';
+		 	echo '<div class="btn-group-xs text-right"  role="group" aria-label="..."><a href="profile.php?fid='.$pendinglist.'">'.$pendingnamelist.'</a><button style="margin-left:20px;"class = "btn btn-success accept" value = "'.$pendinglist.'" role="button">Accept</button><button  value = "'.$pendinglist.'"  class = "btn btn-danger decline" role="button">Decline</button></div>';
 		 	echo "<br><br>";
 		 	
 		 }
+		}
+		
+		if(sizeof($publist)>0){
+		echo "<h4>Recommended users to Friend</h4>";
+		 
 		 	
+		
+		 	 foreach($publist as $item){
+		 	 $pname = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$item."'");
+		 	 $namerow = mysqli_fetch_array($pname,MYSQLI_ASSOC);
+		 	echo '<a href="profile.php?fid='.$item.'"> '.$namerow['name'].'</a><br>';
+		 	
+		 }
+		}
 }
 
     if($t->num_rows >0){
  ?> 
-      
-      <h4>Friends  <span style="font-weight:200"> <?php if(isset($mutual)){ if($loadprofile != $_SESSION['id']){
-      echo "($mutual mutual";}  if($mutual>1){echo "friends)";}else{echo " friend)";}}?></span></h4>
+    
+      <h4>Friends  <span style="font-weight:200"> <?php if(isset($mutual)){if($mutual>0){ if($loadprofile != $_SESSION['id']){
+      echo "($mutual mutual";  if($mutual>1){echo "friends)";}else{echo " friend)";}}}}?></span></h4>
       <?php
 	
 		 while($row3 = mysqli_fetch_array($t,MYSQLI_ASSOC)){
