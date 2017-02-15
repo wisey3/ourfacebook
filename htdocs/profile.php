@@ -360,7 +360,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
          $name = $row_data['name'];
           echo "<li><a href='circles/$circleid'>$name</a></li>";        
         }
-       
+       ?>
        
        
          <!--Put circles stuff here-->
