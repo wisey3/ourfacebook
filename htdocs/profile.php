@@ -114,10 +114,16 @@ function getStates(value) {
     </form>
  </li>
           <ul class="nav navbar-nav navbar-right" style="margin-left:20px" id="feedmenu">
-            <li id="p" class="active"><a href="#" id='f1'>Photos</a></li>
-            <li id="b"><a  href="#" id='f2'>Blog <span class="sr-only">(current)</span></a></li>
-            <li id="c"><a href="#" id='f3'>Circles</a></li>
-          </ul>
+              <li id="p" class="active"><a href="#" id='f1'>Photos</a></li>
+              <li id="b"><a  href="#" id='f2'>Blog <span class="sr-only">(current)</span></a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circles <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                 <li id="c"><a href="#" id='f3'>View Circles</a></li>
+                 <li><a href="#" data-toggle="modal" data-target="#createcircle" >Create Circle</a></li>
+                </ul>
+	      </li>
+           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
@@ -345,7 +351,15 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       
       
        <div class="jumbotron col-md-6 feed" id="fcircles">
-       Circles
+        Circles
+        <?php
+        $r = mysqli_query($dbc,"SELECT * FROM circles WHERE id IN ( SELECT circleID from circlemembership where userID = '".$loadprofile."')");
+        while($row_data = mysqli_fetch_array($r,MYSQLI_ASSOC))
+        {
+         $circleid = $row_data['id'];
+         $name = $row_data['name'];
+          echo "<li><a href='circles/$circleid'>$name</a></li>";        
+        }
        
        
        
@@ -787,10 +801,62 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 });
 </script>
                 </div>
-          
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade" id="createcircle">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+            Create Circle
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+      <div class="modal-body">
+        <form id="createCircleform" method="POST" class="form-horizontal" role="form">
+          <div class="form-group">
+            <div class="col-sm-12">
+              <div class="input-group">
+                <span class="input-group-addon"><span class="fa fa-circle-o"></span></span>   
+                <input id="name" name="name" data-validation="length" data-validation-length="min1" class="form-control required" type="text" size="16" placeholder="Circle Name" autofocus="autofocus" required/>
+              </div>
+            </div>
+          </div>              
+          <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>      
+        </form>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.8/jquery.form-validator.min.js"></script>
+        <script>$.validate();</script>
+        <div class="modal-footer">
+          <button id="submitcircle" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group" data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>" data-success-text="<span class='glyphicon glyphicon-ok'></span>" >Save </button>
+          <script>
+            var $btn = $('#submitcircle');
+            $btn.on('click', function(e) {   
+            $.ajax({
+              type: "POST",
+              url: "createCircle.php",
+              data: $("#createCircleform").serialize(), // serializes the form's elements.
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.name) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.name); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.payment-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
+                $('#createcircle').modal('hide');
+            }, 350);
+                                }
+                            }
+        });
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+});
+</script>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
   </body>
 </html>
