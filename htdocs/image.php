@@ -66,7 +66,7 @@ $albumName = $album['albumName'];
           </div>
         </nav>
         <div>
-        <a href="photo.php?name=<?php echo $albumName?>&user=<?php echo $user?>&num=<?php echo $albumId?>" style="display: inline; float:left;"><img src="backarrow.png" height="50px" /></a>
+        <a href="photo.php?name=<?php echo $albumName?>&user=<?php echo $user?>&num=<?php echo $albumId?>" style="display: inline; float:left;"><img src="icons/backarrow.png" height="50px" /></a>
         <!-- href='photo.php?name=".$albumName."&user=".$user."&num=".$album['albumID']." -->
         </div>
         <div align="center"> <!--for the main bulk of the page-->
@@ -107,9 +107,6 @@ $albumName = $album['albumName'];
 
                     ?>              
                 </div>
-                <form action="delete.php?type=Photo&photoID=<?php echo $photoId ?>" method="post">
-                    <input value="DELETE" type="submit"/>
-                </form>
 
                 <!--COmment boxes-->
                 <div style="border:solid; background-color: whitesmoke; position: absolute; padding:10px;  width:35vw; height:350px; top:25px; left:700px;">

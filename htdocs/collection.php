@@ -1,14 +1,15 @@
 <?php
 require_once('db_connect.php');
+require_once('tablecheck.php');
 session_start();
-$user = $_GET['user'];
-$name = $_GET['name'];
-$albumId = $_GET['num'];
+$user = 1; //use this as a test
+//$name = mysql_real_escape_string('2013');
+
+if(!file_exists('uploads')){
+	mkdir('uploads');
+}
 
 
-//$name = mysql_real_escape_string($_GET['name']);
-
-//$name = get the name from the previous thing :) //this is important!!! name of the album
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +20,7 @@ $albumId = $_GET['num'];
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <link rel="icon" href="../../favicon.ico">
 
-	    <title><?php echo $name?></title>
+	    <title>Collections</title>
 
 
 	    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -28,7 +29,8 @@ $albumId = $_GET['num'];
 	 	<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   	</head>
-  	<body>
+
+	<body>
 		<nav class="navbar navbar-default navbar-static-top">
 	      <div class="container">
 	        <div class="navbar-header">
@@ -62,29 +64,17 @@ $albumId = $_GET['num'];
 	        </div><!--/.nav-collapse -->
 	      </div>
 	    </nav>
-	    <div>
-	    <a href="collection.php" style="display: inline; float:left;"><img src="backarrow.png" height="50px" /></a>
-	    </div>
 	    <div style="background-color:whitesmoke; padding: 30px; position:absolute; left:12vw; width:980px;">
-	    	<div style="display: inline-block;">
-	    	<h1 style="display: inline;"><strong><?php echo $name?></strong></h1>
-	    	</div>
-	    	<br>
+	    	<div><h1><strong>Collections page</strong></h1></div>
 	    	<br>
 
     		<div id="collectionGrid" style="background-color:white; width:920px;">
     			<div>
     			<?php
-    				$quer = "SELECT * FROM photo WHERE albumID = (SELECT albumId FROM album WHERE albumName = '".$name."')";
-					$photos = mysqli_query($dbc,$quer);
-					//$result = $db->query("SELECT * FROM photo");
-
-					//displays all the collections associated with that user
-					/*while($row = mysql_fetch_array($albumNo,MYSQLI_ASSOC)){
-						//echo'<form action="photos.html"><input type="submit" value=image id="1" /></form>';
-						echo '<a href="photos.html">Image will go here</a>';
-						//maybe make this into a button
-					}*/
+					//$albumNo = $dbc->query("SELECT * FROM album WHERE userID = '".$user."'");
+    				$quer = "SELECT * FROM album WHERE userID = '".$user."'";
+					$albumNo = mysqli_query($dbc,$quer);
+					
 
 					$maxcols = 5;
 					$i = 0;
@@ -92,53 +82,55 @@ $albumId = $_GET['num'];
 					//Open the table and its first row
 					echo "<table>";
 					echo "<tr>";
-					while ($image = mysqli_fetch_array($photos)) {
+					while ($album = mysqli_fetch_array($albumNo)) {
 
 					    if ($i == $maxcols) {
 					        $i = 0;
 					        echo "</tr><tr>";
 					    }
 
-					    $photoNum = $image['photoID'];
-					    $photoName = mysql_real_escape_string($image['refLoc']); //needs to be the path of where it was stored.
-					    //$albumNo = $image['albumID'];
+					    $name = $album['albumName'];
 
-					    echo "<td><div style='margin:7px; width:170px; height:170px; background-color:skyblue; float:left; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); overflow:hidden;'>";
-					    list($width,$height) = getimagesize(''.$photoName.'');
-					    if($width>$height){
-                            echo "<a href='image.php?photoid=".$photoNum."&photoname=".$photoName."&user=".$user."'><img src='".$photoName."' height='170px'></a>"; //align center vertically
-                        }
-                        else{
-                            echo "<a href='image.php?photoid=".$photoNum."&photoname=".$photoName."&user=".$user."'><img src='".$photoName."' width='170px'></a>"; //align center horizontally
-                        }
-			    		
-					    echo "</div></td>";
-
-					    //echo "<td>".$name."</td>";
-
-					    //echo "<td><a href='photo.php?name=".$name."&user=".$user."'>".$name."</a></td><br>";
-					    //echo "<td><a href='photo.php?name=".$name."&user=".$user.">".$name."</a></td><br>";
-					    //echo "<td><img src=\"" . $image['src'] . "\" /></td>";
+					    echo "<td>";
+					    //whole box
+					    echo "<div style='position:relative;'>"; 
+					    //top button
+					    	echo "<a href='deleteimage.php?type=Collection&albumID=".$album['albumID']."'>";
+							    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+							    	//image
+							    	echo "<img src='icons/close.png' style='height:30px; ' />";
+							    echo "</div>";
+						    echo "</a>";
+						    //main button
+						    echo "<a href='photo.php?name=".$name."&user=".$user."&num=".$album['albumID']."'>";
+						    	echo "<div style='margin:7px; width:170px; height:170px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
+						    		echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
+						    	echo "</div>";
+				    		echo "</a>";
+					    echo "</div>";
+					    echo "</td>";
 
 					    $i++;
 					}
+
+					//add collection pop-up
 
 					if($i==5){
 						//close the table
 						echo "</tr>";
 						echo "</table>";
 
-						//add photo square
-						echo "<td><a href='popup.php?type=Photo&album=".$albumId."&user=".$user."' style='color:black;'>
-					    		<div style='margin:7px; width:170px; height:170px; background-color:lightgrey; float:left; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);'>";
+						//add collection square
+						echo "<td><a href='popup.php?type=Collection&user=".$user."' style='color:black;'>
+					    		<div style='margin:7px; width:170px; height:170px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
 			    		//echo "<img src='plus.png'/>";
 					    echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:grey;'>ADD</p>";
 					    echo "</div></a></td>";
 					}
 					else{
-						//add photo square
-						echo "<td><a href='popup.php?type=Photo&album=".$albumId."&user=".$user."' style='color:black;'>
-					    		<div style='margin:7px; width:170px; height:170px; background-color:lightgrey; float:left; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);'>";
+						//add collection square
+						echo "<td><a href='popup.php?type=Collection&user=".$user."' style='color:black;'>
+					    		<div style='margin:7px; width:170px; height:170px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
 			    		//echo "<img src='plus.png'/>";
 					    echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:grey;'>ADD</p>";
 					    echo "</div></a></td>";
@@ -153,28 +145,38 @@ $albumId = $_GET['num'];
 						echo "</tr>";
 						echo "</table>";
 					}
-
 					
 				?>
     			</div>
     		</div>
-    		<br>    		
+    		<br>
 		</div>
-		<form action="delete.php?type=Collection&albumID=<?php echo $albumId ?>" method="post">
-			<input value="DELETE" type="submit"/>
-		</form>	
 
-<!--adding a image-->
 
-<!-- <form action="upload.php" method="post" enctype="multipart/form-data">
-	<input type="file" name="img" id="img">
-	<input type="hidden" name="album" id="id" value="<?php //echo '$albumId'?>";>
-	<input type="submit" value="Add Image" name="submit">
-</form> -->
 
-<!--If the photo table is empty, then reset the count to be 0.-->
+	<br>
 
-</body>
+
+
+	<!--<?php
+	//$sql = "INSERT INTO album VALUES('3','$name','$user','CURRENT_TIMESTAMP')";
+	//$result = $db->query($sql);
+	?>-->
+
+	
+
+
+	</body>
 </html>
 
+<!--<form action="photos.html?id=1">
+    <input type="submit" value="Album1" id="1" />
+</form>
 
+<form action="photos.html?id=2">
+    <input type="submit" value="Album2" id="2" />
+</form>
+
+<form action="photos.html?id=3">
+    <input type="submit" value="Album3" id="3" />
+</form>-->
