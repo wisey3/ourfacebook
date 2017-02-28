@@ -115,7 +115,15 @@ function getStates(value) {
  </li>
           <ul class="nav navbar-nav navbar-right" style="margin-left:20px" id="feedmenu">
               <li id="p" class="active"><a href="#" id='f1'>Photos</a></li>
-              <li id="b"><a  href="#" id='f2'>Blog <span class="sr-only">(current)</span></a></li>
+              <li id="b" class="dropdown">
+                <a  href="#" id='f2' class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                 <li id="b"><a href="#" id='f2'>View Blog</a></li>
+                  <?php if($_SESSION['id'] == $loadprofile){?>
+                 <li><a href="#" data-toggle="modal" data-target="#addNewPost" >Add New Post</a></li>
+                 <?php } ?>
+                </ul>
+              </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circles <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -345,6 +353,58 @@ $("#sn").find("#fcircles").addClass("activejumbo");
        
        
        <!--Put blog stuff here-->
+
+        <?php 
+       $user_id = $loadprofile;
+  $query = "SELECT * FROM posts WHERE user_id='$user_id' ORDER BY id DESC";
+  $posts = mysqli_query($dbc, $query);
+?>
+       
+    <div id="container">
+      <header>
+        <?php if($_SESSION['id'] == $loadprofile){?>
+        <h1>My Blog</h1>
+        <?php } ?>
+      </header>
+      <div id="posts">
+        <ul>
+          <?php while($row = mysqli_fetch_assoc($posts)) : ?>
+            <li class="post">
+              <span><?php echo $row['title'] ?></span>
+              <span><?php echo $row['date'] ?></span>
+              <?php echo $row['content'] ?>
+            </li>
+<?php if($_SESSION['id'] == $loadprofile){?>
+            <form method="post" action="delete_entry.php">
+             <input type="hidden" name="post_id" value="<?php echo $row['id']?>" />
+          <input id="show-btn" type="submit" name="submit" value="Delete"/>
+        </form>
+      <?php } ?>
+          <?php endwhile; ?>
+        </ul>
+      </div>
+      
+     
+    </div>
+    <?php if($_SESSION['id'] == $loadprofile){?>
+ <div id="post-form">
+        <!-- If there was an error in the previous input data, display a message. -->
+        <?php if (isset($_GET['error'])) : ?>
+          <div class="error"><?php echo $_GET['error']; ?></div>
+        <?php endif; ?>
+        <!-- make a post form and submit it to process.php -->
+        <form method="post" action="post_entry.php">
+          <input type="text" id="title" name="title" placeholder="Title"/>
+          <!-- <input type="text" id="content" name="content" placeholder="Enter Content"/> -->
+
+          <textarea rows="5" cols="80" id="content" name="content" placeholder="Enter Content"></textarea>
+<input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['id']?>"/>
+          <input id="show-btn" type="submit" name="submit" value="Post"/>
+        </form>
+
+        <?php } ?>
+      </div>
+
        
        
       </div>
@@ -858,6 +918,37 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     </div>
   </div>
 </div>
+	    
+<div class="modal fade" id="addNewPost">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+            Add New Post
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+      <div class="modal-body">
+        <form id="newPostForm" method="POST" action="post_entry.php" class="form-horizontal" role="form">
+          <div class="form-group">
+            <div class="col-sm-12">
+              <div class="input-group">
+                <input id="title" name="title" data-validation="length" data-validation-length="min1" class="form-control required" type="text" size="16" placeholder="Title" autofocus="autofocus" required/>
+                 <textarea id="content" name="content" data-validation="length" data-validation-length="min1" class="form-control required" type="text" size="16" placeholder="Content" autofocus="autofocus" required></textarea>
+                 <input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['id']?>"/>
+              </div>
+            </div>
+          </div>              
+          <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3> 
+          <input id="show-btn" type="submit" name="submit" value="Post"/>     
+        </form>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.8/jquery.form-validator.min.js"></script>
+        <script>$.validate();</script>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+	    
   </body>
 </html>
 <?php
