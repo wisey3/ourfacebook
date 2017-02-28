@@ -18,13 +18,13 @@ $currentUser = 1;
 $currentAlbum = $_GET['albumId'];//get this
 
 //limit file size
-if($_FILES["img"]["size"]>500000){
-	echo "Sorry, image file is too large.";
-	$uploadOk = 0; //changes to 0 as cannot be uploaded if too large
-}
+// if($_FILES["img"]["size"]>500000){
+// 	echo "Sorry, image file is too large.";
+// 	$uploadOk = 0; //changes to 0 as cannot be uploaded if too large
+// }
 
 //check extension
-if($imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png" && $imageFileType != "gif"){
+if($imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png" && $imageFileType != "gif" && $imageFileType != "JPG"){
 	echo "Sorry, image file is not in the correct format.";
 	$uploadOk = 0;
 }

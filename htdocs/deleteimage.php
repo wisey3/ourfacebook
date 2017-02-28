@@ -17,18 +17,36 @@ $type = $_GET['type'];
 if($type=='Collection'){
 	$album = $_GET['albumID'];
 
-	$quer = "DELETE FROM album WHERE albumID = ".$album."";
-	$result = $dbc->query($quer);
+	$sql = "SELECT * FROM photo WHERE albumID = ".$album."";
+	$res = mysqli_query($dbc,$sql);
+	
+	while($image = mysqli_fetch_assoc($res)){
+		//echo ''.$image['refLoc'].'';
+		if(file_exists($image['refLoc'])){
+			removeImage($image['photoID'],$dbc);
+		}		
+	}		
 
+	//delete album
+	$quer = "DELETE FROM album WHERE albumID = ".$album."";
+	$result = mysqli_query($dbc,$quer);
+
+	//delete photo comments in album
+	$quer = "DELETE FROM comment WHERE albumID = ".$album."";
+	$result = $dbc->query($quer);	
+
+	//delete photos in album
 	$quer = "DELETE FROM photo WHERE albumID = ".$album."";
-	$result = $dbc->query($quer);
+	$result = $dbc->query($quer);	
 
 	header('Location: collection.php');
 }
 else{
-	$photoID = $_GET['photoID'];	
+	$photoID = $_GET['photoID'];
 
-	//$quer = "SELECT albumID FROM photo WHERE photoID = ".$photoID."";
+	removeImage($photoID,$dbc);
+
+	//get vars for the returned page
 	$sql = "SELECT * FROM album WHERE albumID = (SELECT albumID FROM photo WHERE photoID = ".$photoID.")";
 	$res = mysqli_query($dbc,$sql);
 	$album = mysqli_fetch_array($res);	 
@@ -37,32 +55,27 @@ else{
 	$albumID = $album['albumID'];
 	$userID = $album['userID'];
 
-	// echo 'photo num '.$photoID.'';
-	// echo 'album num '.$albumID.', album name '.$albumName.' and user id '.$userID.'';
-
 	$quer = "DELETE FROM photo WHERE photoID = ".$photoID."";
 	$result = $dbc->query($quer);
 
 	$quer = "DELETE FROM comment WHERE photoID = ".$photoID."";
 	$result = $dbc->query($quer);
-
+	
 	header('Location: photo.php?name='.$albumName.'&user='.$userID.'&num='.$albumID.''); //need album name album id and user id
 	//photo.php?name=".$name."&user=".$user."&num=".$album['albumID']."
+	
 }
 
+function removeImage(&$photoID,&$dbc){
+	$sql = "SELECT * FROM photo WHERE photoID = ".$photoID."";
+	$res = mysqli_query($dbc,$sql);
+	$photo = mysqli_fetch_array($res);
 
-// $quer = "INSERT INTO album VALUES('3','$name','1',current_timestamp)";
-// 	$res = mysql_query($dbc,$quer);
+	$photoFile = $photo['refLoc'];
+	echo ''.$photoFile.'';
+	//$photoFile = 'uploads/'.$photoFile;
 
-// if($name==NULL){
-// 	echo "Sorry, your collection must have a title";
-// }
-// else{
-// 	
-// }
-
-// header('Location: collection.php');
-
-// echo json_encode($form_data);
+	unlink($photoFile);
+}
 
 ?>

@@ -5,10 +5,10 @@ session_start();
 $user = 1; //use this as a test
 //$name = mysql_real_escape_string('2013');
 
-if(!file_exists('uploads')){
-	mkdir('uploads');
-}
-
+// if(!file_exists('uploads')){
+// 	echo 'uploads does not exist.';
+// 	mkdir('uploads',0777);
+// }
 
 ?>
 
@@ -94,7 +94,7 @@ if(!file_exists('uploads')){
 					    echo "<td>";
 					    //whole box
 					    echo "<div style='position:relative;'>"; 
-					    //top button
+					    //delete button
 					    	echo "<a href='deleteimage.php?type=Collection&albumID=".$album['albumID']."'>";
 							    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
 							    	//image

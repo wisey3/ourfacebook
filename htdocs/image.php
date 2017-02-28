@@ -1,5 +1,6 @@
 <?php
 require_once('db_connect.php');
+require_once('tablecheck.php');
 session_start();
 $photoId = $_GET['photoid']; //get the id of thr photo you selecetd
 $photoName = $_GET['photoname'];
@@ -125,7 +126,7 @@ $albumName = $album['albumName'];
                             echo'<td>'.$row['content'].'</td>'; 
                             echo"</tr>";
                             //echo"<p style='font-size:10px;'>".$row['date']."</p>";
-                            echo"<tr><td style='font-size:10px;'><i>".$row['date']."</i></td></tr>";
+                            echo"<tr><td style='font-size:10px;'><i>".$row['userID']." ".$row['date']."</i></td></tr>";
                             echo "</table><br>";
 
                             //echo '</div>';
@@ -135,7 +136,7 @@ $albumName = $album['albumName'];
                     </div>
                     <?php
                         echo '<div style="position: absolute; bottom: 10px;">';
-                        echo '<form action="comment.php?photoid='.$photoId.'&user='.$user.'" id="addcomment" method="post">
+                        echo '<form action="comment.php?photoid='.$photoId.'&user='.$user.'&albumid='.$albumId.'" id="addcomment" method="post">
                                     <input type="text" id="body" name="body" style="width:27vw;" required/>
                                     <input id="post" type="submit" value="Post"/>
                                 </form> ';

@@ -6,7 +6,7 @@ $form_data = array(); //Pass back the data to `form.php`
 require_once('db_connect.php');
 session_start();
 
-$name = $_POST['albumName'];
+$name = mysql_real_escape_string($_POST['albumName']);
 $userid = $_GET['fid'];
 $user = 1;
 $access = $_POST['access'];
@@ -15,15 +15,18 @@ $access = $_POST['access'];
 // $quer = "INSERT INTO album VALUES('3','$name','1',current_timestamp)";
 // 	$res = mysql_query($dbc,$quer);
 
-if($name==NULL){
+if($name == NULL){
 	echo "Sorry, your collection must have a title";
+	header('Location: popup.php?type=Collection&user='.$user.'');
 }
 else{
 	$sql = "INSERT INTO album VALUES(DEFAULT,'$name','$user',CURRENT_TIMESTAMP)"; //try and work out how to add auto_increment and current_timestamp.
 	$result = $dbc->query($sql);
+
+	header('Location: collection.php');
 }
 
-header('Location: collection.php');
+
 
 //session id for the current profile that you're on
 

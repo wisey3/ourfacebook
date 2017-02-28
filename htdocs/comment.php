@@ -7,17 +7,22 @@ require_once('db_connect.php');
 
 //$userid = $_GET['fid']; //current user
 $user = $_GET['user'];
-$body = $_POST['body'];
+$body = mysql_real_escape_string($_POST['body']);
 $photoID = $_GET['photoid'];
+$albumID = $_GET['albumid'];
 
 //echo 'the id is '.$photoID.', user is '.$user.' and the body of the comment is '.$body.'';
 
 // $sql = "INSERT INTO comment VALUES(DEFAULT,$photoID,$user,$body,CURRENT_TIMESTAMP)"; 
 // $result = $dbc->query($sql);	
 
-$sql = "INSERT INTO comment VALUES(DEFAULT,'$photoID','$user','$body',CURRENT_TIMESTAMP)";
-$result = $dbc->query($sql);	
-
+if($body == NULL){
+	echo 'you cannot have an empty comment you fool';
+}
+else{
+	$sql = "INSERT INTO comment VALUES(DEFAULT,'$photoID','$user','$albumID','$body',CURRENT_TIMESTAMP)";
+	$result = $dbc->query($sql);	
+}
 
 // $quer = "INSERT INTO album VALUES('3','$name','1',current_timestamp)";
 // 	$res = mysql_query($dbc,$quer);

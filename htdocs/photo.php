@@ -1,5 +1,6 @@
 <?php
 require_once('db_connect.php');
+require_once('tablecheck.php');
 session_start();
 $user = $_GET['user'];
 $name = $_GET['name'];
