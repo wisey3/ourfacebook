@@ -54,7 +54,7 @@ else{
 
 
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="css/buttons.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
  <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
              <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -197,6 +197,16 @@ $(document).ready(function() {
         });
         event.preventDefault(); //Prevent the default submit
     });
+});
+$(document).ready(function() {
+  $('.circle').each(function () {
+      var safeColors = ['00','33','66','99','cc','ff'];
+      var r = safeColors[Math.floor(Math.random()*6)];
+      var g = safeColors[Math.floor(Math.random()*6)];
+      var b = safeColors[Math.floor(Math.random()*6)];
+      var color =  "#"+r+g+b;
+      $(this).css("background-color", color);
+  });
 });
 
  </script>    
@@ -421,7 +431,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         {
          $circleid = $row_data['id'];
          $name = $row_data['name'];
-          echo "<li><a href='circles/$circleid'>$name</a></li>";        
+          echo "<a href='circles/$circleid'><div class='circle'>$name</div></a>";        
         }
        ?>
        
