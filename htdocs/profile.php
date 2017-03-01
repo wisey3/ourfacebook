@@ -115,14 +115,16 @@ function getStates(value) {
  </li>
           <ul class="nav navbar-nav navbar-right" style="margin-left:20px" id="feedmenu">
               <li id="p" class="active"><a href="#" id='f1'>Photos</a></li>
-              <li id="b" class="dropdown">
-                <a  href="#" id='f2' class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog <span class="caret"></span></a>
+              <li id="b" <?php if($_SESSION['id'] == $loadprofile){ ?>  class="dropdown" <?php } ?>>
+                <a  href="#" id='f2'  <?php if($_SESSION['id'] == $loadprofile){ ?> class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" <?php } ?>>Blog<?php if($_SESSION['id'] == $loadprofile){ ?>  <span class="caret"></span> <?php }?></a>
+             <?php if($_SESSION['id'] == $loadprofile){?>
               <ul class="dropdown-menu">
-                 <li id="b"><a href="#" id='f2'>View Blog</a></li>
-                  <?php if($_SESSION['id'] == $loadprofile){?>
+                 <!--<li id="b"><a href="#" id='f2'>View Blog</a></li>-->
+                  
                  <li><a href="#" data-toggle="modal" data-target="#addNewPost" >Add New Post</a></li>
-                 <?php } ?>
+                
                 </ul>
+                 <?php } ?>
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circles <span class="caret"></span></a>
@@ -172,7 +174,7 @@ $(document).ready(function() {
             data      : {user: user1, friend: friend1, action: action1}, //Forms name
      
             success   : function(data) {
-            $('#friends').load(document.URL +  ' #friends');
+           $("#friends").load(location.href+" #friends>*","");
                             }
         });
         event.preventDefault(); //Prevent the default submit
@@ -190,7 +192,7 @@ $(document).ready(function() {
             data      : {user: user1, friend: friend1, action: action1}, //Forms name
      
             success   : function(data) {
-			 $('#friends').load(document.URL +  ' #friends');                 
+			 $("#friends").load(location.href+" #friends>*","");            
 			}
         });
         event.preventDefault(); //Prevent the default submit
@@ -349,26 +351,27 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       
       
        <div class="jumbotron col-md-6 feed" id="fblog">
-       Blog
+       Blog Posts:
        
        
        <!--Put blog stuff here-->
 
         <?php 
        $user_id = $loadprofile;
-  $query = "SELECT * FROM posts WHERE user_id='$user_id' ORDER BY id DESC";
+  $query = "SELECT * FROM posts WHERE user_id='".$user_id."' ORDER BY id DESC";
   $posts = mysqli_query($dbc, $query);
+  echo $posts->num_rows;
 ?>
        
-    <div id="container">
+    <div class="containter">
       <header>
         <?php if($_SESSION['id'] == $loadprofile){?>
         <h1>My Blog</h1>
         <?php } ?>
       </header>
-      <div id="posts">
+      <div class = "row" id="posts">
         <ul>
-          <?php while($row = mysqli_fetch_assoc($posts)) : ?>
+          <?php while($row = mysqli_fetch_array($posts,MYSQLI_ASSOC)) : ?>
             <li class="post">
               <span><?php echo $row['title'] ?></span>
               <span><?php echo $row['date'] ?></span>
@@ -387,7 +390,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
      
     </div>
     <?php if($_SESSION['id'] == $loadprofile){?>
- <div id="post-form">
+ <div id="post-form" class="row">
         <!-- If there was an error in the previous input data, display a message. -->
         <?php if (isset($_GET['error'])) : ?>
           <div class="error"><?php echo $_GET['error']; ?></div>
@@ -397,15 +400,15 @@ $("#sn").find("#fcircles").addClass("activejumbo");
           <input type="text" id="title" name="title" placeholder="Title"/>
           <!-- <input type="text" id="content" name="content" placeholder="Enter Content"/> -->
 
-          <textarea rows="5" cols="80" id="content" name="content" placeholder="Enter Content"></textarea>
+          <textarea rows="5" cols="50" id="content" name="content" placeholder="Enter Content"></textarea>
 <input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['id']?>"/>
           <input id="show-btn" type="submit" name="submit" value="Post"/>
         </form>
 
-        <?php } ?>
+  
       </div>
 
-       
+           <?php } ?>  
        
       </div>
       
@@ -938,7 +941,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
               </div>
             </div>
           </div>              
-          <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3> 
+          <h3  style="color:red" class="blog-errors text-center"></h3> 
           <!--<input id="show-btn" type="submit" name="submit" value="Post"/>    --> 
         </form>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.8/jquery.form-validator.min.js"></script>
@@ -955,15 +958,21 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     
            success: function(data) {
                             if (!data.success) { //If fails
-                                if (data.errors.name) { //Returned if any error from process.php
-                                    $('.payment-errors').fadeIn(1000).html(data.errors.name); //Throw relevant error
+                                if (data.errors.notitle) { //Returned if any error from process.php
+                                    $('.blog-errors').fadeIn(1000).html(data.errors.notitle); //Throw relevant error
+                                }
+                                if (data.errors.failed) { //Returned if any error from process.php
+                                    $('.blog-errors').fadeIn(1000).html(data.errors.failed); //Throw relevant error
                                 }
                             }
                             else {
-                                    $('.payment-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
-                setTimeout(function() {
+                                    $('.blog-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                                     setTimeout(function() {
                 $('#addNewPost').modal('hide');
             }, 350);
+    $("#fblog").load(location.href+" #fblog>*","").addClass("activejumbo");
+
+
                                 }
                             }
         });
