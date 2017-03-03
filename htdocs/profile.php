@@ -330,9 +330,9 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 </script>    
     
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
-      Photos
- 
+      Photos 
       <!--Put photos stuff here-->
+      
       
       
          
