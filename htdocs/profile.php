@@ -1,5 +1,7 @@
 <?php
 // Start the session
+
+// echo 'well hello there';
       require_once('db_connect.php');
 	session_start();
 if (!isset($_POST['email']) && !isset($_SESSION['id'])){
@@ -58,6 +60,7 @@ else{
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
  <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
              <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+             <script src="http://code.jquery.com/jquery-latest.js"></script>
 
 
   </head>
@@ -330,9 +333,171 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 </script>    
     
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
-      Photos 
-      <!--Put photos stuff here-->
-      
+      <h2><strong>Collections</strong></h2>
+      <br>
+
+      <script type="text/javascript">
+      $(document).ready(function() {
+        $(".view").click(function (e) {
+                alert('button clicked');
+                e.preventDefault();
+
+                // var albumID = $(this).attr('id'); //each album has unique id
+
+                var myData = 'user='+ <?php echo $user ?>+'&albumId='+ $(this).attr('id'); //build a post data structure
+
+                // $("#collectionBox").load("testComment.php?user='dave' #check");
+                $.ajax({
+                  type: "POST", // HTTP method POST or GET
+                  url: "testComment.php", //Where to make Ajax calls
+                  dataType:"text", // Data type, HTML, json etc.
+                  // data:myData, //Form variables
+                  data:myData,
+                  success:function(data){
+                    // alert(data);
+                      $("#collectionBox").load(document.url + "#check");
+
+                  },
+                  error:function (xhr, ajaxOptions, thrownError){
+                      $("#FormSubmit").show(); //show submit button
+                      alert(thrownError);
+                  }
+                });
+        });
+      });
+      </script>
+
+      <?php
+        $owner = $loadprofile;
+        $currentUser = $_SESSION['id'];
+      ?>
+ 
+      <div id="collectionBox" style="background-color:whitesmoke; padding: 30px; position:absolute; left:0.1vw; width:565px;">
+        <!-- <div><h2><strong>Collections page</strong></h2></div>
+        <br> -->
+
+        <!--Modal testing-->
+        <div class="modal fade" id="addCol" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create a collection</h4>
+              </div>
+              <div class="modal-body">
+                <!-- <textarea name="content_txt" id="addCol" cols="45" rows="5" placeholder="Enter some text"></textarea>
+                <button type="submit" id="add" class="btn btn-default" data-dismiss="modal">Add</button> -->
+                  <form action="addcollection.php" id="addcol" method="post">
+              <input style="margin-left: 35%;" type="text" id="albumName" name="albumName" placeholder="Collection Name" required/>
+              <br>
+              <br>
+              <input style="margin-left:45%; position:relative; bottom:10px;" type="submit" id="newCollection" value="Add" name="submit">
+            </form>
+              </div>
+             <!--  <div class="modal-footer">
+                <button type="submit" class="btn btn-default" data-dismiss="modal">Add</button>
+              </div> -->
+            </div>
+            
+          </div>
+        </div>
+
+        <div id="collectionGrid" style="background-color:white; width:500px;">
+          <div>
+          <?php
+          //if on own profile
+          //if($loadprofile==$_SESSION['id'])
+            $quer = "SELECT * FROM album WHERE userID = '".$owner."'"; //loadprofile anyway as thats what you want to see
+          $albumNo = mysqli_query($dbc,$quer);
+          
+
+          $maxcols = 3;
+          $i = 0;
+
+          //Open the table and its first row
+          echo "<table id='tabel'>";
+          echo "<tr>";
+          while ($album = mysqli_fetch_array($albumNo)) {
+
+              if ($i == $maxcols) {
+                  $i = 0;
+                  echo "</tr><tr>";
+              }
+
+              $name = $album['albumName'];
+
+              echo "<td>";
+              //whole box
+              echo "<div style='position:relative;'>"; 
+              //delete button
+              if($owner==$currentUser){
+                // echo "<a href='deleteimage.php?type=Collection&albumID=".$album['albumID']."'>";
+                echo "<a class='delete' id='".$album['albumID']."'>";
+                  echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+                    //image
+                    echo "<img src='icons/close.png' style='height:30px; ' />";
+                  echo "</div>";
+                echo "</a>";
+              }
+                //main button
+                // echo "<a href='photo.php?name=".$name."&user=".$owner."&num=".$album['albumID']."'>";
+                echo "<a class='view' id='".$album['albumID']."'>";
+                  echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
+                    echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
+                  echo "</div>";
+                echo "</a>";
+              echo "</div>";
+              echo "</td>";
+
+              $i++;
+          }
+
+          //add collection pop-up
+          
+          if($i==3){
+            //close the table
+            echo "</tr>";
+            echo "</table>";
+
+            //add collection square
+            if($owner==$currentUser){
+              echo "<td>";
+              echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+              echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+              echo '</button>';
+
+                echo "</td>";
+            }
+          }
+          else{
+            //add collection square
+            if($owner==$currentUser){
+              echo "<td>";
+              echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+              echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+              echo '</button>';
+
+                echo "</td>";
+            }
+
+              //Add empty <td>'s to even up the amount of cells in a row:
+            while ($i <= $maxcols) {
+                echo "<td>&nbsp;</td>";
+                $i++;
+            }
+
+            //close the table
+            echo "</tr>";
+            echo "</table>";
+          }
+          
+        ?>
+          </div>
+        </div>
+        <br>
+    </div>
       
       
          
