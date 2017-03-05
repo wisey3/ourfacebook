@@ -91,105 +91,117 @@ $(document).ready(function() {
       <br>
 
       <?php
-        $owner = 1;
-        $user = 1;
-      ?>
- 
-      <div id="collectionBox" style="background-color:whitesmoke; padding: 30px; position:absolute; left:0.1vw; width:565px;">
-            
-        
-        <div id="collectionGrid" style="background-color:white; width:500px;">
-          <div>
-          <?php
-          
-          $quer = "SELECT * FROM album WHERE userID = '".$owner."'"; //loadprofile anyway as thats what you want to see
-          $albumNo = mysqli_query($dbc,$quer);
-          
-
-          $maxcols = 3;
-          $i = 0;
-
-          //Open the table and its first row
-          echo "<table id='tableCol'>";
-          echo "<tr>";
-          while ($album = mysqli_fetch_array($albumNo)) {
-
-              if ($i == $maxcols) {
-                  $i = 0;
-                  echo "</tr><tr>";
-              }
-
-              $name = $album['albumName'];
-              $albumId = $album['albumID'];
-
-              echo "<td>";
-              //whole box
-              echo "<div style='position:relative;'>"; 
-              //delete button
-              if($owner==$user){
-                echo "<a class='deleteCol' id='".$albumId."'>";
-                  echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
-                    //image
-                    echo "<img src='icons/close.png' style='height:30px; ' />";
-                  echo "</div>";
-                echo "</a>";
-              }
-                //main button
-                echo "<a class='view' id='".$albumId."'>";
-                  echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
-                    echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
-                  echo "</div>";
-                echo "</a>";
-              echo "</div>";
-              echo "</td>";
-
-              $i++;
-          }
-
-          //add collection pop-up
-          
-          if($i==3){
-            //close the table
-            echo "</tr>";
-            echo "</table>";
-
-            //add collection square
-            if($owner==$user){
-              echo "<td>";
-              echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-              echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
-              echo '</button>';
-
-              echo "</td>";
-            }
+          if(isset($loadprofile)&&isset($_SESSION['id'])){
+            $owner = $loadprofile;
+            $user = $_SESSION['id'];
           }
           else{
-            //add collection square
-            if($owner==$user){
-              echo "<td>";
-              echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-              echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
-              echo '</button>';
+            $owner = 1;
+            $user = 1;
+          }
+          
 
+          // echo 'owner: '.$loadprofile.' and the user: '.$_SESSION['id'];
+        ?>
+   
+        <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width:565px;">
+        <h2><strong>Collections</strong></h2>
+
+        <div id="hola">              
+          
+          <div id="collectionGrid" style="background-color:white; width:500px;">
+            <div>
+            <?php
+            
+            $quer = "SELECT * FROM album WHERE userID = '".$owner."'"; //loadprofile anyway as thats what you want to see
+            $albumNo = mysqli_query($dbc,$quer);
+            
+
+            $maxcols = 3;
+            $i = 0;
+
+            //Open the table and its first row
+            echo "<table id='tableCol'>";
+            echo "<tr>";
+            while ($album = mysqli_fetch_array($albumNo)) {
+
+                if ($i == $maxcols) {
+                    $i = 0;
+                    echo "</tr><tr>";
+                }
+
+                $name = $album['albumName'];
+                $albumId = $album['albumID'];
+
+                echo "<td>";
+                //whole box
+                echo "<div style='position:relative;'>"; 
+                //delete button
+                if($owner==$user){
+                  echo "<a class='deleteCol' id='".$albumId."'>";
+                    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+                      //image
+                      echo "<img src='icons/close.png' style='height:30px; ' />";
+                    echo "</div>";
+                  echo "</a>";
+                }
+                  //main button
+                  echo "<a class='view' id='".$albumId."'>";
+                    echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
+                      echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
+                    echo "</div>";
+                  echo "</a>";
+                echo "</div>";
                 echo "</td>";
-            }
 
-              //Add empty <td>'s to even up the amount of cells in a row:
-            while ($i <= $maxcols) {
-                echo "<td>&nbsp;</td>";
                 $i++;
             }
 
-            //close the table
-            echo "</tr>";
-            echo "</table>";
-          }
-          
-        ?>
+            //add collection pop-up
+            
+            if($i==3){
+              //close the table
+              echo "</tr>";
+              echo "</table>";
+
+              //add collection square
+              if($owner==$user){
+                echo "<td>";
+                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '</button>';
+
+                echo "</td>";
+              }
+            }
+            else{
+              //add collection square
+              if($owner==$user){
+                echo "<td>";
+                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '</button>';
+
+                  echo "</td>";
+              }
+
+                //Add empty <td>'s to even up the amount of cells in a row:
+              while ($i <= $maxcols) {
+                  echo "<td>&nbsp;</td>";
+                  $i++;
+              }
+
+              //close the table
+              echo "</tr>";
+              echo "</table>";
+            }
+            
+          ?>
+            </div>
           </div>
+          <br>
+        </div> 
         </div>
-        <br>
-    </div>
 
     <!--Add Collection Modal-->
     	<div class="modal fade" id="addCol" role="dialog">

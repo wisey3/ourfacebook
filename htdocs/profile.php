@@ -95,7 +95,7 @@ else{
                 <li class="dropdown-header">Privacy</li>
                 <li><a href="#" data-toggle="modal" data-target="#visibility">Visibility Settings</a></li>
                 <li><a href="#">Blocking</a></li>
-                <li><a href="collection.php">Photos</a></li>
+                <li><a href="#">Photos</a></li>
                 <li><a href="#">Blog Settings</a></li>
               </ul>
             </li>
@@ -331,178 +331,163 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 });
      
 </script>    
+
+<script type="text/javascript">
+  
+</script>
     
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
-      <h2><strong>Collections</strong></h2>
-      <br>
 
       <script type="text/javascript">
-      $(document).ready(function() {
-        $(".view").click(function (e) {
-                alert('button clicked');
-                e.preventDefault();
+        $(document).ready(function() {
+          $("body").on("click","#collectionBox .view",function (e) {
+            // alert('looking at an album');
 
-                // var albumID = $(this).attr('id'); //each album has unique id
+            var myData = 'user='+ <?php echo $_SESSION['id'] ?>+'&albumId='+ $(this).attr('id');
+            $.post("photos.php #hi",myData,function(data){
+              $("#collectionBox").html(data);
+            });
 
-                var myData = 'user='+ <?php echo $user ?>+'&albumId='+ $(this).attr('id'); //build a post data structure
-
-                // $("#collectionBox").load("testComment.php?user='dave' #check");
-                $.ajax({
-                  type: "POST", // HTTP method POST or GET
-                  url: "testComment.php", //Where to make Ajax calls
-                  dataType:"text", // Data type, HTML, json etc.
-                  // data:myData, //Form variables
-                  data:myData,
-                  success:function(data){
-                    // alert(data);
-                      $("#collectionBox").load(document.url + "#check");
-
-                  },
-                  error:function (xhr, ajaxOptions, thrownError){
-                      $("#FormSubmit").show(); //show submit button
-                      alert(thrownError);
-                  }
-                });
+          });
         });
-      });
+        $(document).ready(function() {
+          $("body").on("click","#collectionBox #addCollection",function (e) {
+          // $("#addCollection").click(function(e){
+            alert('adding a collection');
+          });
+        });
+        $(document).ready(function() {
+          $("body").on("click","#collectionBox .deleteCol",function (e) {
+            // alert('trying to delete collection');
+
+            var myData = 'albumID='+ $(this).attr('id')+'&type=Collection';
+
+            // alert(myData);
+            $(this).closest('td').remove();
+
+            $.ajax({
+                type: "POST", // HTTP method POST or GET
+                url: "deleteimage.php", //Where to make Ajax calls
+                data:myData,
+                dataType: "text",
+                success:function(data){         
+                  alert('Collection Deleted');
+                },        
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('oh bollocks');
+                }
+            });
+          });
+        });
       </script>
 
-      <?php
-        $owner = $loadprofile;
-        $currentUser = $_SESSION['id'];
-      ?>
- 
-      <div id="collectionBox" style="background-color:whitesmoke; padding: 30px; position:absolute; left:0.1vw; width:565px;">
-        <!-- <div><h2><strong>Collections page</strong></h2></div>
-        <br> -->
+        Photos
 
-        <!--Modal testing-->
-        <div class="modal fade" id="addCol" role="dialog">
-          <div class="modal-dialog">
+        <?php
+          $owner = $loadprofile;
+          $user = $_SESSION['id'];
+
+          // echo 'owner: '.$loadprofile.' and the user: '.$_SESSION['id'];
+        ?>
+   
+        <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width:565px;">
+        <h2><strong>Collections</strong></h2>
+              
           
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Create a collection</h4>
-              </div>
-              <div class="modal-body">
-                <!-- <textarea name="content_txt" id="addCol" cols="45" rows="5" placeholder="Enter some text"></textarea>
-                <button type="submit" id="add" class="btn btn-default" data-dismiss="modal">Add</button> -->
-                  <form action="addcollection.php" id="addcol" method="post">
-              <input style="margin-left: 35%;" type="text" id="albumName" name="albumName" placeholder="Collection Name" required/>
-              <br>
-              <br>
-              <input style="margin-left:45%; position:relative; bottom:10px;" type="submit" id="newCollection" value="Add" name="submit">
-            </form>
-              </div>
-             <!--  <div class="modal-footer">
-                <button type="submit" class="btn btn-default" data-dismiss="modal">Add</button>
-              </div> -->
-            </div>
+          <div id="collectionGrid" style="background-color:white; width:500px;">
+            <div>
+            <?php
             
-          </div>
-        </div>
-
-        <div id="collectionGrid" style="background-color:white; width:500px;">
-          <div>
-          <?php
-          //if on own profile
-          //if($loadprofile==$_SESSION['id'])
             $quer = "SELECT * FROM album WHERE userID = '".$owner."'"; //loadprofile anyway as thats what you want to see
-          $albumNo = mysqli_query($dbc,$quer);
-          
+            $albumNo = mysqli_query($dbc,$quer);
+            
 
-          $maxcols = 3;
-          $i = 0;
+            $maxcols = 3;
+            $i = 0;
 
-          //Open the table and its first row
-          echo "<table id='tabel'>";
-          echo "<tr>";
-          while ($album = mysqli_fetch_array($albumNo)) {
+            //Open the table and its first row
+            echo "<table id='tableCol'>";
+            echo "<tr>";
+            while ($album = mysqli_fetch_array($albumNo)) {
 
-              if ($i == $maxcols) {
-                  $i = 0;
-                  echo "</tr><tr>";
-              }
+                if ($i == $maxcols) {
+                    $i = 0;
+                    echo "</tr><tr>";
+                }
 
-              $name = $album['albumName'];
+                $name = $album['albumName'];
+                $albumId = $album['albumID'];
 
-              echo "<td>";
-              //whole box
-              echo "<div style='position:relative;'>"; 
-              //delete button
-              if($owner==$currentUser){
-                // echo "<a href='deleteimage.php?type=Collection&albumID=".$album['albumID']."'>";
-                echo "<a class='delete' id='".$album['albumID']."'>";
-                  echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
-                    //image
-                    echo "<img src='icons/close.png' style='height:30px; ' />";
-                  echo "</div>";
-                echo "</a>";
-              }
-                //main button
-                // echo "<a href='photo.php?name=".$name."&user=".$owner."&num=".$album['albumID']."'>";
-                echo "<a class='view' id='".$album['albumID']."'>";
-                  echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
-                    echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
-                  echo "</div>";
-                echo "</a>";
-              echo "</div>";
-              echo "</td>";
-
-              $i++;
-          }
-
-          //add collection pop-up
-          
-          if($i==3){
-            //close the table
-            echo "</tr>";
-            echo "</table>";
-
-            //add collection square
-            if($owner==$currentUser){
-              echo "<td>";
-              echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-              echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
-              echo '</button>';
-
+                echo "<td>";
+                //whole box
+                echo "<div style='position:relative;'>"; 
+                //delete button
+                if($owner==$user){
+                  echo "<a class='deleteCol' id='".$albumId."'>";
+                    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+                      //image
+                      echo "<img src='icons/close.png' style='height:30px; ' />";
+                    echo "</div>";
+                  echo "</a>";
+                }
+                  //main button
+                  echo "<a class='view' id='".$albumId."'>";
+                    echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
+                      echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
+                    echo "</div>";
+                  echo "</a>";
+                echo "</div>";
                 echo "</td>";
-            }
-          }
-          else{
-            //add collection square
-            if($owner==$currentUser){
-              echo "<td>";
-              echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-              echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
-              echo '</button>';
 
-                echo "</td>";
-            }
-
-              //Add empty <td>'s to even up the amount of cells in a row:
-            while ($i <= $maxcols) {
-                echo "<td>&nbsp;</td>";
                 $i++;
             }
 
-            //close the table
-            echo "</tr>";
-            echo "</table>";
-          }
-          
-        ?>
+            //add collection pop-up
+            
+            if($i==3){
+              //close the table
+              echo "</tr>";
+              echo "</table>";
+
+              //add collection square
+              if($owner==$user){
+                echo "<td>";
+                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '</button>';
+
+                echo "</td>";
+              }
+            }
+            else{
+              //add collection square
+              if($owner==$user){
+                echo "<td>";
+                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '</button>';
+
+                  echo "</td>";
+              }
+
+                //Add empty <td>'s to even up the amount of cells in a row:
+              while ($i <= $maxcols) {
+                  echo "<td>&nbsp;</td>";
+                  $i++;
+              }
+
+              //close the table
+              echo "</tr>";
+              echo "</table>";
+            }
+            
+          ?>
+            </div>
           </div>
-        </div>
-        <br>
-    </div>
+          <br>
+        </div>        
       
-      
-         
-      
-      </div>
+      </div> <!--End of photo jumbotron-->
       
       
        <div class="jumbotron col-md-6 feed" id="fblog">
@@ -655,7 +640,36 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 ?>
     </div> <!-- /container -->
 
-    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> <!--MODALS-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> 
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <!-- need this - who knew? -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+
+<!--Add Collection Modal-->
+<div class="modal fade" id="addCol" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Create a collection</h4>
+      </div>
+      <div class="modal-body">
+        <textarea name="content_txt" id="addText" cols="45" rows="1" placeholder="Enter collection name"></textarea>
+        <button id="addCollection" type="button" class="btn btn-default" data-dismiss="modal">Add</button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+<!--End of Add Collection Modal-->
+
 <div class="modal fade" id="editinfo">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

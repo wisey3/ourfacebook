@@ -44,6 +44,9 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
 	
 
 	$user = $_POST['user'];
+
+	
+
 	// $body = mysql_real_escape_string($_POST['body']);
 	$photoID = $_POST['photoId'];
 
@@ -64,6 +67,12 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
 	
 	$insert_row = $dbc->query("INSERT INTO comment VALUES('$photoID','$user','$albumID','".$contentToSave."',CURRENT_TIMESTAMP)");
 
+	$quer = "SELECT * FROM Users WHERE id = '".$user."'";
+    $res = mysqli_query($dbc,$quer);
+    $row = mysqli_fetch_array($res);
+
+    $userName = $row['name'];
+
 	// echo 'it has been inserted yay!';
 	
 	if($insert_row)
@@ -72,7 +81,7 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
 	  	// echo"<tr>";
         echo'<li>'.$contentToSave.'</li>'; 
         // echo"</tr>";
-        echo"<li style='font-size:10px;'><i>".$user." ".$date." ".$time."</i></li>";
+        echo"<li style='font-size:10px;'><i>".$userName." ".$date." ".$time."</i></li>";
         echo '<br>';
 
 	  	$dbc->close(); //close db connection

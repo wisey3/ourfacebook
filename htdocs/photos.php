@@ -12,6 +12,7 @@ if(isset($_POST['user'])&&isset($_POST['albumId'])){
     $album = mysqli_query($dbc,$quer);
     $row = mysqli_fetch_array($album);
 	$name = $row['albumName'];
+	$owner = $row['userID'];
 }
 else{
 	$user = 4;
@@ -19,7 +20,7 @@ else{
 	$name = 'poppy';
 }
 
-	// echo 'this is the albumId you entered '.$albumId.' and the name of the album '.$name;
+	// echo 'this is the album owner '.$owner.' and this is the current user '.$user;
 ?>
 
 <!DOCTYPE html>
@@ -95,6 +96,33 @@ $(document).ready(function() {
 	});
 });
 $(document).ready(function() {
+	$("body").on("click","#collectionBox .backButton",function (e) {
+	// $(".backButton").click(function(e){ 
+
+		var toWhere = $(this).attr('id');
+		if(toWhere=='toCollection'){
+			// alert('trying to go back to collection view');
+			$("#collectionBox").load("collections.php #collectionBox");
+		}
+		else{
+			// alert('going to back to photos view');
+			// alert('user='+ <?php echo $user ?>);
+			// alert('&albumId='+<?php echo $albumId ?>);
+			var myData = 'user='+ <?php echo $user ?>+'&albumId='+<?php echo $albumId ?>;
+			$.post("photos.php #hi",myData,function(data){
+				$("#collectionBox").html(data);
+			});
+		}
+
+		// 
+
+		// var myData = 'user='+<?php echo $user ?>+'&type='+$(this).attr('id');
+		// $.post("image.php #hey",myData,function(data){
+		// 	$("#collectionBox").html(data);
+		// });
+	});
+});
+$(document).ready(function() {
 	$("body").on("click","#collectionBox .FormSubmit",function (e) {
 		// alert('posting a comment');
 		e.preventDefault();
@@ -132,13 +160,17 @@ $(document).ready(function() {
 </head>
 <body>
 
-	<div id="collectionBox" style="background-color:whitesmoke; padding: 30px; position:absolute; left:0.1vw; width:565px;">
+	<div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; left:0.1vw; width:565px;">
 		<!--whole page-->
-		<div id="hi" style="position:relative; top:-30px;"> 
+		<div id="hi" style="position:relative; top:-50px;">
+		<a class="backButton" id="toCollection"><div style="position:absolute; left:-30px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
+      	<br>
+		<h2><strong>Collections ></strong> <i style="font-size: 25px;"><?php echo $name ?></i></h2>
 
 			<div id="collectionGrid" style="background-color:white; width:500px;">
 				<div>
 					<?php
+
 					$quer = "SELECT * FROM photo WHERE albumID = '$albumId'";
 					$photos = mysqli_query($dbc,$quer);					
 
@@ -161,13 +193,16 @@ $(document).ready(function() {
 					    
 					    echo "<td>";
 					    //main box
-					    echo "<div style='position:relative;'>"; 
+					    echo "<div style='position:relative;'>";
+					    //delete box 
+					    if($owner==$user){ 
 					    	echo "<a class='deleteImg' id=".$photoNum.">";
 							    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
 							    	//image
 							    	echo "<img src='icons/close.png' style='height:30px; ' />";
 							    echo "</div>";
 						    echo "</a>";
+						}
 					    	//image button
 					    	echo "<div style='margin:7px; width:150px; height:150px; background-color:skyblue; float:left; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); overflow:hidden;'>";
 
@@ -195,22 +230,26 @@ $(document).ready(function() {
 						echo "</table>";
 
 						//add photo square
-						echo "<td>";
-						echo '<button style="margin:7px; width:150px; height:150px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
-						echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
-						echo '</button>';
+						if($owner==$user){ 
+							echo "<td>";
+							echo '<button style="margin:7px; width:150px; height:150px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
+							echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+							echo '</button>';
 
-					    echo "</td>";
+						    echo "</td>";
+						}
 
 					}
 					else{
 						//add photo square
-						echo "<td>";
-						echo '<button style="margin:7px; width:150px; height:150px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
-						echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
-						echo '</button>';
+						if($owner==$user){ 
+							echo "<td>";
+							echo '<button style="margin:7px; width:150px; height:150px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
+							echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+							echo '</button>';
 
-					    echo "</td>";
+						    echo "</td>";
+						}
 
 					    //Add empty <td>'s to even up the amount of cells in a row:
 						while ($i <= $maxcols) {
