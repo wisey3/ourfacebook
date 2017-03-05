@@ -1,21 +1,12 @@
-<!--php code for adding a collection entry into the album table.-->
-
 <?php
 $errors = array(); //To store errors
 $form_data = array(); //Pass back the data to `form.php`
 require_once('db_connect.php');
 
-// $name = $_POST['albumName'];
-// $userid = $_GET['fid'];
-// $user = 1;
-
-$type = $_GET['type'];
-
-
-//echo 'delete type '.$type.' and the album Id is '.$album.'';
+$type = $_POST['type'];
 
 if($type=='Collection'){
-	$album = $_GET['albumID'];
+	$album = $_POST['albumID'];
 
 	$sql = "SELECT * FROM photo WHERE albumID = ".$album."";
 	$res = mysqli_query($dbc,$sql);
@@ -26,6 +17,8 @@ if($type=='Collection'){
 			removeImage($image['photoID'],$dbc);
 		}		
 	}		
+
+	// echo 'whats happening';
 
 	//delete album
 	$quer = "DELETE FROM album WHERE albumID = ".$album."";
@@ -39,10 +32,12 @@ if($type=='Collection'){
 	$quer = "DELETE FROM photo WHERE albumID = ".$album."";
 	$result = $dbc->query($quer);	
 
-	header('Location: collection.php');
+	// header('Location: collection.php');
 }
-else{
-	$photoID = $_GET['photoID'];
+else if($type=='Photo'){
+	// $photoID = $_GET['photoID'];
+	$photoID = $_POST['photoID'];
+	// $photoID = 2;
 
 	removeImage($photoID,$dbc);
 
@@ -61,8 +56,7 @@ else{
 	$quer = "DELETE FROM comment WHERE photoID = ".$photoID."";
 	$result = $dbc->query($quer);
 	
-	header('Location: photo.php?name='.$albumName.'&user='.$userID.'&num='.$albumID.''); //need album name album id and user id
-	//photo.php?name=".$name."&user=".$user."&num=".$album['albumID']."
+	// header('Location: photo.php?name='.$albumName.'&user='.$userID.'&num='.$albumID.'');
 	
 }
 
@@ -73,8 +67,6 @@ function removeImage(&$photoID,&$dbc){
 
 	$photoFile = $photo['refLoc'];
 	echo ''.$photoFile.'';
-	//$photoFile = 'uploads/'.$photoFile;
-
 	unlink($photoFile);
 }
 

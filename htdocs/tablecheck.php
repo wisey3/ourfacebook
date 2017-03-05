@@ -42,7 +42,6 @@ if((mysqli_query($dbc,"SELECT * FROM comment"))==FALSE){
 	echo 'sorry this table doesnt exist';
 
 	$sql = "CREATE TABLE comment (
-	commentID INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 	photoID INT(6),
 	userID INT(6),
 	content TEXT NOT NULL,
@@ -52,9 +51,6 @@ if((mysqli_query($dbc,"SELECT * FROM comment"))==FALSE){
 	if ($dbc->query($sql) === FALSE) {
 	    echo "Error creating table: " . $dbc->error;
 	}
-}
-else{
-	checkreset($dbc,'comment','commentID');
 }
 
 
