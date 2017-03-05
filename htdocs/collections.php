@@ -33,7 +33,7 @@ $(document).ready(function() {
 
         $.ajax({
 	        type: "POST", // HTTP method POST or GET
-	        url: "addCollection.php", //Where to make Ajax calls
+	        url: "addcollection.php", //Where to make Ajax calls
 	        dataType:"text", // Data type, HTML, json etc.
 	        data:myData,
 	        success:function(response){
