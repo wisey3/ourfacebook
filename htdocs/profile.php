@@ -352,6 +352,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
       Photos
 
+      <!--My Ajax buttons (photos)-->
       <script type="text/javascript">
         $(document).ready(function() {
           $("body").on("click","#collectionBox .view",function (e) {
@@ -365,9 +366,31 @@ $("#sn").find("#fcircles").addClass("activejumbo");
           });
         });
         $(document).ready(function() {
-          $("body").on("click","#collectionBox #addCollection",function (e) {
-          // $("#addCollection").click(function(e){
-            alert('adding a collection');
+          $("body").on("click","#addCol .addItem",function (e) {
+            // if($(this).attr('id')=="addCollection"){
+            //   alert('adding a collection');
+            // }      
+            if($("#addText").val()==''){        
+                alert("Please enter some text!");
+                return false;
+            }
+
+            var myData = 'user='+<?php echo $_SESSION['id']?>+'&content_txt='+$("#addText").val();
+
+            $.ajax({
+              type: "POST", // HTTP method POST or GET
+              url: "addCollection.php", //Where to make Ajax calls
+              dataType:"text", // Data type, HTML, json etc.
+              data:myData,
+              success:function(response){
+                  $("#tableCol").append(response); //responds -> <ul>
+                  $("#addText").val(''); //empty text field on successful
+              },
+              error:function (xhr, ajaxOptions, thrownError){
+                  $("#addCollection").show(); //show submit button
+                  alert(thrownError);
+              }
+            });
           });
         });
         $(document).ready(function() {
@@ -398,21 +421,21 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         Photos
 
         <?php
-          $owner = $loadprofile;
-          $user = $_SESSION['id'];
+          $owner = $loadprofile; //whose pictures you're looking at
+          $user = $_SESSION['id']; //who you are
 
-          // echo 'owner: '.$loadprofile.' and the user: '.$_SESSION['id'];
+
         ?>
+
    
         <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width:565px;">
         <h2><strong>Collections</strong></h2>
-              
           
           <div id="collectionGrid" style="background-color:white; width:500px;">
             <div>
             <?php
             
-            $quer = "SELECT * FROM album WHERE userID = '".$owner."'"; //loadprofile anyway as thats what you want to see
+            $quer = "SELECT * FROM album WHERE userID = '".$owner."'";
             $albumNo = mysqli_query($dbc,$quer);
             
 
@@ -455,8 +478,6 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 
                 $i++;
             }
-
-            //add collection pop-up
             
             if($i==3){
               //close the table
@@ -500,12 +521,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
           </div>
           <br>
         </div>
- 
-      <!--Put photos stuff here-->
-      
-      
-         
-      
+  
+           
       </div> <!--End of photo stuff-->
       
       
@@ -713,6 +730,28 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     </div> <!-- /container -->
 
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+<!--Add Collection Modal-->
+<div class="modal fade" id="addCol" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Create a collection</h4>
+      </div>
+      <div class="modal-body">
+        <textarea name="content_txt" id="addText" cols="45" rows="1" placeholder="Enter collection name"></textarea>
+        <button id="addCollection" type="button" class="addItem" data-dismiss="modal">Add</button><!--class="btn btn-default"-->
+      </div>
+    </div>
+    
+  </div>
+</div>
+<!--End of Add Collection Modal-->
+
+
 <div class="modal fade" id="editinfo">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

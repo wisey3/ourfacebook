@@ -9,41 +9,6 @@ $user = $_POST['user']; //user = $loadprofile;
 <!DOCTYPE html>
 <html>
 <head>
-	<script>
-        $(document).ready(function() {
-            //##### send add record Ajax request to response.php #########
-            $(".FormSubmit").click(function (e) {
-                // alert('button clicked');
-                e.preventDefault();
-                if($("#contentText").val()==='')
-                {
-                    alert("Please enter some text!");
-                    return false;
-                }
-                
-                var myData = 'content_txt='+ $("#contentText").val()+'&user='+ <?php echo $user; ?>+'&photoId='+<?php echo $photoId; ?>+'&albumId='+<?php echo $albumId; ?>; //build a post data structure
-                var user1 = 'user='+ <?php echo $user; ?>;
-                var photoID = 'photoId='+<?php echo $photoId; ?>;
-                var albumID = 'albumId='+<?php echo $albumId; ?>;
-                $.ajax({
-                type: "POST", // HTTP method POST or GET
-                url: "addComment.php", //Where to make Ajax calls
-                dataType:"text", // Data type, HTML, json etc.
-                // data:myData, //Form variables
-                data:myData,
-                success:function(response){
-                    $("#responds").append(response); //responds -> <ul>
-                    $("#contentText").val(''); //empty text field on successful
-
-                },
-                error:function (xhr, ajaxOptions, thrownError){
-                    $("#FormSubmit").show(); //show submit button
-                    alert(thrownError);
-                }
-                });
-            });
-        });
-    </script>
 </head>
 <body>
 	<!-- <div class="yo">whats up</div> -->
@@ -114,7 +79,7 @@ $user = $_POST['user']; //user = $loadprofile;
             </div>
             <?php
 
-                echo '<div style="position: absolute; bottom: 10px;">';
+                echo '<div id="commentBox" style="position: absolute; bottom: 10px;">';
                 echo '<textarea name="content_txt" id="contentText" cols="60" rows="1" placeholder="Enter some text"></textarea>';
                 echo '<button style="position:absolute; right:-90px; " class="FormSubmit" id='.$photoId.'>Comment</button>';
                 echo '</div';

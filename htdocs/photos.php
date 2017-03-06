@@ -28,7 +28,7 @@ else{
 <head>
 <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> 
+<!-- <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>  -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>	
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <!-- need this - who knew? -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -37,119 +37,131 @@ else{
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 
 <script type="text/javascript">
+var count = 0;
 $(document).ready(function() {
 	$("#addPhoto").click(function(e){ 
 		// alert('adding a photo here <?php echo $name ?>');
-		var formData = new FormData();
+		count++;
 
-  		formData.append('img', $('input[type=file]')[0].files[0]);
-  		formData.append('album','<?php echo $albumId?>');
+		if(count==1){ //to stop the rabbit hole multi send loop thing
+			var formData = new FormData();
 
-        $.ajax({
-	        type: "POST", // HTTP method POST or GET
-	        url: "addPhoto.php", //Where to make Ajax calls
-	        data:formData,
-	        contentType: false,
-	    	processData: false,
-	        success:function(response){
-	        	$("#tablePho").append(response);
-	        	// alert('yay');
-	        },        
-	        error:function (xhr, ajaxOptions, thrownError){
-	            alert('oh bollocks');
-	        }
-        });
+	  		formData.append('img', $('input[type=file]')[0].files[0]);
+	  		formData.append('album','<?php echo $albumId?>');
+
+	        $.ajax({
+		        type: "POST", // HTTP method POST or GET
+		        url: "addPhoto.php", //Where to make Ajax calls
+		        data:formData,
+		        contentType: false,
+		    	processData: false,
+		        success:function(response){
+		        	$("#tablePho").append(response);
+		        	count = 0;
+		        	// alerst('yay');
+		        },        
+		        error:function (xhr, ajaxOptions, thrownError){
+		            alert('oh bollocks');
+		        }
+	        });
+	    }
 	});
 });
 $(document).ready(function() {
 	$("body").on("click","#collectionBox .deleteImg",function (e) {
 		// alert('trying to delete image');
+		count++;
 
-		var myData = 'photoID='+ $(this).attr('id')+'&type=Photo';
+		if(count==1){ //to stop the rabbit hole multi send loop thing
 
-		// alert(myData);
-		$(this).closest('td').remove();
+			var myData = 'photoID='+ $(this).attr('id')+'&type=Photo';
 
-		$.ajax({
-	        type: "POST", // HTTP method POST or GET
-	        url: "deleteimage.php", //Where to make Ajax calls
-	        data:myData,
-	        dataType: "text",
-	        success:function(data){        	
-	        	alert('Image Deleted');
-	        },        
-	        error:function (xhr, ajaxOptions, thrownError){
-	            // $("#addCollection").show(); //show submit button
-	            alert('oh bollocks');
-	        }
-        });
+			$(this).closest('td').remove();
+
+			$.ajax({
+		        type: "POST", // HTTP method POST or GET
+		        url: "deleteimage.php", //Where to make Ajax calls
+		        data:myData,
+		        dataType: "text",
+		        success:function(data){        	
+		        	alert('Image Deleted');
+		        	count = 0;
+		        },        
+		        error:function (xhr, ajaxOptions, thrownError){
+		            alert('oh bollocks');
+		        }
+	        });
+		}
 	});
 });
 $(document).ready(function() {
 	$("body").on("click","#collectionBox .img",function (e) {
 		// alert('clicked on image');
+		count++;
 
-		var myData = 'user='+<?php echo $user ?>+'&photoId='+$(this).attr('id');
-		$.post("image.php #hey",myData,function(data){
-			$("#collectionBox").html(data);
-		});
+		if(count==1){ //to stop the rabbit hole multi send loop thing
+
+			var myData = 'user='+<?php echo $user ?>+'&photoId='+$(this).attr('id');
+			$.post("image.php #hey",myData,function(data){
+				$("#collectionBox").html(data);
+				count = 0;
+			});
+		}
 	});
 });
 $(document).ready(function() {
 	$("body").on("click","#collectionBox .backButton",function (e) {
-	// $(".backButton").click(function(e){ 
+		count++;
 
-		var toWhere = $(this).attr('id');
-		if(toWhere=='toCollection'){
-			// alert('trying to go back to collection view');
-			$("#collectionBox").load("collections.php #collectionBox");
+		if(count==1){ //to stop the rabbit hole multi send loop thing
+
+			var toWhere = $(this).attr('id');
+			if(toWhere=='toCollection'){
+				// alert('trying to go back to collection view');
+				var myData = 'user='+ <?php echo $user ?>+'&owner='+<?php echo $owner ?>;
+				$.post("collections.php #collectionBox",myData,function(data){
+					$("#collectionBox").html(data);
+					count = 0;
+				});
+				// $("#collectionBox").load("collections.php #collectionBox");
+			}
+			else{
+				// alert('going to back to photos view');
+				var myData = 'user='+ <?php echo $user ?>+'&albumId='+<?php echo $albumId ?>;
+				$.post("photos.php #hi",myData,function(data){
+					$("#collectionBox").html(data);
+					count = 0;
+				});
+			}
 		}
-		else{
-			// alert('going to back to photos view');
-			// alert('user='+ <?php echo $user ?>);
-			// alert('&albumId='+<?php echo $albumId ?>);
-			var myData = 'user='+ <?php echo $user ?>+'&albumId='+<?php echo $albumId ?>;
-			$.post("photos.php #hi",myData,function(data){
-				$("#collectionBox").html(data);
-			});
-		}
-
-		// 
-
-		// var myData = 'user='+<?php echo $user ?>+'&type='+$(this).attr('id');
-		// $.post("image.php #hey",myData,function(data){
-		// 	$("#collectionBox").html(data);
-		// });
 	});
 });
 $(document).ready(function() {
-	$("body").on("click","#collectionBox .FormSubmit",function (e) {
-		// alert('posting a comment');
+	$("body").on("click","#commentBox .FormSubmit",function (e) {
 		e.preventDefault();
+		count++;
 
-		if($("#contentText").val()==='')
-        {
-            alert("Please enter some text!");
-            return false;
-        }
+		if(count==1){ //to stop the rabbit hole multi send loop thing
 
-        var myData = 'content_txt='+ $("#contentText").val()+'&user='+ <?php echo $user; ?>+'&photoId='+$(this).attr('id')+'&albumId='+<?php echo $albumId; ?>;
+			var myData = 'content_txt='+ $("#contentText").val()+'&user='+ <?php echo $user; ?>+'&photoId='+$(this).attr('id')+'&albumId='+<?php echo $albumId; ?>;
 
-        $.ajax({
-            type: "POST", // HTTP method POST or GET
-            url: "addComment.php", //Where to make Ajax calls
-            dataType:"text", // Data type, HTML, json etc.
-            data:myData,
-            success:function(response){
-                $("#responds").append(response); //responds -> <ul>
-                $("#contentText").val(''); //empty text field on successful
+	        $.ajax({
+	            type: "POST", // HTTP method POST or GET
+	            url: "addComment.php", //Where to make Ajax calls
+	            dataType:"text", // Data type, HTML, json etc.
+	            data:myData,
+	            success:function(response){
+	                $("#responds").append(response); //responds -> <ul>
+	                $("#contentText").val(''); //empty text field on successful
+	                count = 0;
 
-            },
-            error:function (xhr, ajaxOptions, thrownError){
-                $("#FormSubmit").show(); //show submit button
-                alert(thrownError);
-            }
-        });		
+	            },
+	            error:function (xhr, ajaxOptions, thrownError){
+	                $("#FormSubmit").show(); //show submit button
+	                alert(thrownError);
+	            }
+	        });	
+		}		
 	});	            
 });
 </script>
@@ -210,12 +222,12 @@ $(document).ready(function() {
 						    if($width>$height){
 						    	echo "<a class='img' id='".$photoNum."'>";
 	                            	echo "<img src='".$photoName."' height='150px'>";
-	                            echo "</a>"; //align center vertically
+	                            echo "</a>";
 	                        }
 	                        else{
 	                        	echo "<a class='img' id='".$photoNum."'>";
 	                            	echo "<img src='".$photoName."' width='150px'>";
-	                            echo "</a>"; //align center horizontally
+	                            echo "</a>";
 	                        }
 			    		
 					    	echo "</div>";
@@ -232,7 +244,7 @@ $(document).ready(function() {
 						//add photo square
 						if($owner==$user){ 
 							echo "<td>";
-							echo '<button style="margin:7px; width:150px; height:150px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
+							echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
 							echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
 							echo '</button>';
 
@@ -244,7 +256,7 @@ $(document).ready(function() {
 						//add photo square
 						if($owner==$user){ 
 							echo "<td>";
-							echo '<button style="margin:7px; width:150px; height:150px; background-color:lightgrey; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
+							echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
 							echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
 							echo '</button>';
 
@@ -266,10 +278,8 @@ $(document).ready(function() {
 				?>
 				</div>
 			</div>  
-		</div>  		
-	</div>
-
-	 <!--Add Photo Modal-->
+		</div> 
+		<!--Add Photo Modal-->
 		<div class="modal fade" id="addPhot" role="dialog">
 		    <div class="modal-dialog">		    
 		      <!-- Modal content-->
@@ -285,7 +295,6 @@ $(document).ready(function() {
 						<br>
 						<br>
 						<button style="margin-left:40%; position:relative; bottom:0px;" class="btn btn-default" data-dismiss="modal" id="addPhoto" name="submit">Add</button>
-						<!-- <input type="submit" value="Add" class="btn btn-default" data-dismiss="modal" id="addPhoto" name="submit"> -->
 						<br>
 						<br>
 						
@@ -293,7 +302,10 @@ $(document).ready(function() {
 		        </div>
 		      </div>		      
 		    </div>
-	    </div>
+	    </div> 		
+	</div>
+
+	 
 </body>
 </html>
 

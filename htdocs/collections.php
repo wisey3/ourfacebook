@@ -1,9 +1,9 @@
 <?php
 require_once('db_connect.php');   
 require_once('tablecheck.php');     
-$photoId = 1;
-$owner = 1; //loadprofile
-$user = 1; //session_id
+// $photoId = 1;
+// $owner = 1; //loadprofile
+// $user = 1; //session_id
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +11,7 @@ $user = 1; //session_id
 <head>
 <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> 
+<!-- <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>  -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>	
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <!-- need this - who knew? -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -20,64 +20,80 @@ $user = 1; //session_id
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 
 <script type="text/javascript">
+var count = 0;
 $(document).ready(function() {
 	$("#addCollection").click(function(e){
 		// alert('adding a collection');
-		if($("#contentText").val()==='')
-        {
-            alert("Please enter some text!");
-            return false;
-        }
+    count++;
 
-        var myData = 'content_txt='+ $("#add").val()+'&user='+ <?php echo $user; ?>;
+    if(count==1){ //to stop the rabbit hole multi send loop thing
+  		if($("#addText").val()==='')
+      {
+          alert("Please enter some text!");
+          return false;
+      }
 
-        $.ajax({
-	        type: "POST", // HTTP method POST or GET
-	        url: "addcollection.php", //Where to make Ajax calls
-	        dataType:"text", // Data type, HTML, json etc.
-	        data:myData,
-	        success:function(response){
-	            $("#tableCol").append(response); //responds -> <ul>
-	            $("#add").val(''); //empty text field on successful
+      var myData = 'content_txt='+ $("#addText").val()+'&user='+ <?php echo $user; ?>;
 
-	        },
-	        error:function (xhr, ajaxOptions, thrownError){
-	            $("#addCollection").show(); //show submit button
-	            alert(thrownError);
-	        }
-        });
+      $.ajax({
+          type: "POST", // HTTP method POST or GET
+          url: "addcollection.php", //Where to make Ajax calls
+          dataType:"text", // Data type, HTML, json etc.
+          data:myData,
+          success:function(response){
+              $("#tableCol").append(response); //responds -> <ul>
+              $("#addText").val(''); //empty text field on successful
+              count = 0;
+
+          },
+          error:function (xhr, ajaxOptions, thrownError){
+              $("#addCollection").show(); //show submit button
+              alert(thrownError);
+          }
+      });
+    }
 	});
 });
 $(document).ready(function() {
 	$("body").on("click","#collectionBox .deleteCol",function (e) {
 		// alert('trying to delete collection');
+    count++;
 
-		var myData = 'albumID='+ $(this).attr('id')+'&type=Collection';
+    if(count==1){ //to stop the rabbit hole multi send loop thing
 
-		// alert(myData);
-		$(this).closest('td').remove();
+  		var myData = 'albumID='+ $(this).attr('id')+'&type=Collection';
 
-		$.ajax({
-	        type: "POST", // HTTP method POST or GET
-	        url: "deleteimage.php", //Where to make Ajax calls
-	        data:myData,
-	        dataType: "text",
-	        success:function(data){        	
-	        	alert('Collection Deleted');
-	        },        
-	        error:function (xhr, ajaxOptions, thrownError){
-	            alert('oh bollocks');
-	        }
-        });
+  		// alert(myData);
+  		$(this).closest('td').remove();
+
+  		$.ajax({
+          type: "POST", // HTTP method POST or GET
+          url: "deleteimage.php", //Where to make Ajax calls
+          data:myData,
+          dataType: "text",
+          success:function(data){        	
+          	alert('Collection Deleted');
+            count = 0;
+          },        
+          error:function (xhr, ajaxOptions, thrownError){
+              alert('oh bollocks');
+          }
+      });
+    }
 	});
 });
 $(document).ready(function() {
 	$("body").on("click","#collectionBox .view",function (e) {
+    count++;
 
-		var myData = 'user='+ <?php echo $user ?>+'&albumId='+ $(this).attr('id');
-		$.post("photos.php #hi",myData,function(data){
-			$("#collectionBox").html(data);
-		});
+    if(count==1){ //to stop the rabbit hole multi send loop thing
+
+  		var myData = 'user='+ <?php echo $user ?>+'&albumId='+ $(this).attr('id');
+  		$.post("photos.php #hi",myData,function(data){
+  			$("#collectionBox").html(data);
+        count = 0;
+  		});
+    }
 	});
 });
 </script>
@@ -91,9 +107,9 @@ $(document).ready(function() {
       <br>
 
       <?php
-          if(isset($loadprofile)&&isset($_SESSION['id'])){
-            $owner = $loadprofile;
-            $user = $_SESSION['id'];
+          if(isset($_POST['owner'])&&isset($_POST['user'])){
+            $owner = $_POST['owner'];
+            $user = $_POST['user'];
           }
           else{
             $owner = 1;
@@ -201,25 +217,28 @@ $(document).ready(function() {
           </div>
           <br>
         </div> 
+        
         </div>
 
-    <!--Add Collection Modal-->
-    	<div class="modal fade" id="addCol" role="dialog">
-		    <div class="modal-dialog">
-		    
-		      <!-- Modal content-->
-		      <div class="modal-content">
-		        <div class="modal-header">
-		          <button type="button" class="close" data-dismiss="modal">&times;</button>
-		          <h4 class="modal-title">Create a collection</h4>
-		        </div>
-		        <div class="modal-body">
-		        	<textarea name="content_txt" id="add" cols="45" rows="1" placeholder="Enter collection name"></textarea>
-		        	<button id="addCollection" class="btn btn-default" data-dismiss="modal">Add</button>
-		        </div>
-		      </div>
-		      
-		    </div>
-	    </div>
+        <!--Add Collection Modal-->
+      <div class="modal fade" id="addCol" role="dialog">
+        <div class="modal-dialog">
+        
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Create a collection</h4>
+            </div>
+            <div class="modal-body">
+              <textarea name="content_txt" id="addText" cols="45" rows="1" placeholder="Enter collection name"></textarea>
+              <button id="addCollection" class="btn btn-default" data-dismiss="modal">Add</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+    
 </body>
 </html>

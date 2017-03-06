@@ -1,49 +1,9 @@
-<!--php code for adding a comment entry into the album table.-->
-
-<?php
-// $errors = array(); //To store errors
-// $form_data = array(); //Pass back the data to `form.php`
-// require_once('db_connect.php');
-
-// //$userid = $_GET['fid']; //current user
-// $user = $_GET['user'];
-// $body = mysql_real_escape_string($_POST['body']);
-// $photoID = $_GET['photoid'];
-// $albumID = $_GET['albumid'];
-
-// if($body == NULL){
-// 	echo 'you cannot have an empty comment you fool';
-// }
-// else{
-// 	$sql = "INSERT INTO comment VALUES('$photoID','$user','$albumID','$body',CURRENT_TIMESTAMP)";
-// 	$result = $dbc->query($sql);	
-// }
-
-// $quer = "SELECT * FROM photo WHERE photoID = ".$photoID.""; //getting the photo reference for this particular photoID
-// $res = $dbc->query($quer);
-// $photo = mysqli_fetch_array($res);
-// $name = $photo['refLoc'];
-
-// header('Location: image.php?user='.$user.'&photoid='.$photoID.'&photoname='.$name.'');
-
-?>
-
 <?php
 
 include_once("db_connect.php");
 
-// echo 'the user '.$_POST['user'];
-// echo 'the body '.$_POST['content_txt'];
-// echo 'the photoId '.$_POST['photoId'];
-// echo 'the album '.$_POST['albumId'];
-
 if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0) 
-{	//check $_POST["content_txt"] is not empty
-	// echo 'well its not empty';
-
-	
-
-	$user = $_POST['user'];
+{	$user = $_POST['user'];
 
 	
 
