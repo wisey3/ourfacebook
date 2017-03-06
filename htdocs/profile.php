@@ -1,9 +1,7 @@
 <?php
 // Start the session
-
-// echo 'well hello there';
       require_once('db_connect.php');
-	session_start();
+  session_start();
 if (!isset($_POST['email']) && !isset($_SESSION['id'])){
 
 echo "Please log in to continue";
@@ -12,36 +10,36 @@ echo '<br><a class = "btn btn-default" role="button" href="index.php">Click to l
 else{
 if(isset($_POST['email'])&&!isset($_GET['fid'])) {
 
-	$p = "SELECT * FROM Users WHERE email = '".$_POST['email']."'";
-	$rs = mysqli_query($dbc,$p);
-	$data = mysqli_fetch_array($rs, MYSQLI_ASSOC);
+  $p = "SELECT * FROM Users WHERE email = '".$_POST['email']."'";
+  $rs = mysqli_query($dbc,$p);
+  $data = mysqli_fetch_array($rs, MYSQLI_ASSOC);
 
-	if($rs->num_rows !=1) {
-		echo "email not recognised";
-		echo '<br><a class = "btn btn-default" role="button" href="index.php">Click to login</a>';
-		exit;
-	}
-	if(!password_verify ( $_POST['password'] , $data['password'])){
-		echo "incorrect password";
-		echo '<br><a class = "btn btn-default" role="button" href="index.php">Click to login</a>';
-		exit;
-	}
-	
-	else{
-	
-		
-		$_SESSION['id'] = $data['id'];
-		$loadprofile = $_SESSION['id'];
-		}
+  if($rs->num_rows !=1) {
+    echo "email not recognised";
+    echo '<br><a class = "btn btn-default" role="button" href="index.php">Click to login</a>';
+    exit;
+  }
+  if(!password_verify ( $_POST['password'] , $data['password'])){
+    echo "incorrect password";
+    echo '<br><a class = "btn btn-default" role="button" href="index.php">Click to login</a>';
+    exit;
+  }
+  
+  else{
+  
+    
+    $_SESSION['id'] = $data['id'];
+    $loadprofile = $_SESSION['id'];
+    }
 }
 else{
-		if(isset($_GET['fid'])) {
-   			$loadprofile = $_GET['fid'];
-		}
-		else{
-			$loadprofile = $_SESSION['id'];
-		}  
-}	
+    if(isset($_GET['fid'])) {
+        $loadprofile = $_GET['fid'];
+    }
+    else{
+      $loadprofile = $_SESSION['id'];
+    }  
+} 
 
 ?>
 <!DOCTYPE html>
@@ -56,11 +54,10 @@ else{
 
 
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="css/buttons.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
  <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
              <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-             <script src="http://code.jquery.com/jquery-latest.js"></script>
 
 
   </head>
@@ -118,14 +115,24 @@ function getStates(value) {
  </li>
           <ul class="nav navbar-nav navbar-right" style="margin-left:20px" id="feedmenu">
               <li id="p" class="active"><a href="#" id='f1'>Photos</a></li>
-              <li id="b"><a  href="#" id='f2'>Blog <span class="sr-only">(current)</span></a></li>
+              <li id="b" <?php if($_SESSION['id'] == $loadprofile){ ?>  class="dropdown" <?php } ?>>
+                <a  href="#" id='f2'  <?php if($_SESSION['id'] == $loadprofile){ ?> class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" <?php } ?>>Blog<?php if($_SESSION['id'] == $loadprofile){ ?>  <span class="caret"></span> <?php }?></a>
+             <?php if($_SESSION['id'] == $loadprofile){?>
+              <ul class="dropdown-menu">
+                 <!--<li id="b"><a href="#" id='f2'>View Blog</a></li>-->
+                  
+                 <li><a href="#" data-toggle="modal" data-target="#addNewPost" >Add New Post</a></li>
+                
+                </ul>
+                 <?php } ?>
+              </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Circles <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                  <li id="c"><a href="#" id='f3'>View Circles</a></li>
                  <li><a href="#" data-toggle="modal" data-target="#createcircle" >Create Circle</a></li>
                 </ul>
-	      </li>
+        </li>
            </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -167,7 +174,7 @@ $(document).ready(function() {
             data      : {user: user1, friend: friend1, action: action1}, //Forms name
      
             success   : function(data) {
-            $('#friends').load(document.URL +  ' #friends');
+           $("#friends").load(location.href+" #friends>*","");
                             }
         });
         event.preventDefault(); //Prevent the default submit
@@ -185,11 +192,21 @@ $(document).ready(function() {
             data      : {user: user1, friend: friend1, action: action1}, //Forms name
      
             success   : function(data) {
-			 $('#friends').load(document.URL +  ' #friends');                 
-			}
+       $("#friends").load(location.href+" #friends>*","");            
+      }
         });
         event.preventDefault(); //Prevent the default submit
     });
+});
+$(document).ready(function() {
+  $('.circle').each(function () {
+      var safeColors = ['00','33','66','99','cc','ff'];
+      var r = safeColors[Math.floor(Math.random()*6)];
+      var g = safeColors[Math.floor(Math.random()*6)];
+      var b = safeColors[Math.floor(Math.random()*6)];
+      var color =  "#"+r+g+b;
+      $(this).css("background-color", color);
+  });
 });
 
  </script>    
@@ -198,29 +215,29 @@ $(document).ready(function() {
     $r = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$loadprofile."'");
     $row = mysqli_fetch_array($r,MYSQLI_ASSOC);
    
-	$name = $row['name'];
-	$sex= $row['sex'];
-	$location = $row['location'];
-	$join = date('d / m / Y', strtotime($row['date_joined']));
-	$dob = $row['dob'];
-	$email = $row['email'];
-	$privacy = $row['privacy'];
-	$date1 = new Datetime("now");
-	$date2 = new DateTime($dob);
-	$interval = $date1->diff($date2);
-	
+  $name = $row['name'];
+  $sex= $row['sex'];
+  $location = $row['location'];
+  $join = date('d / m / Y', strtotime($row['date_joined']));
+  $dob = $row['dob'];
+  $email = $row['email'];
+  $privacy = $row['privacy'];
+  $date1 = new Datetime("now");
+  $date2 = new DateTime($dob);
+  $interval = $date1->diff($date2);
+  
     $age =  "" . $interval->y. " years old";
      
      
      if($loadprofile != $_SESSION['id']){
-     	if($loadprofile < $_SESSION['id']){
-     		$smaller = $loadprofile;
-     		$bigger = $_SESSION['id'];
-     	}
-     	else{
-     		$smaller = $_SESSION['id'];
-     		$bigger = $loadprofile;
-     	}
+      if($loadprofile < $_SESSION['id']){
+        $smaller = $loadprofile;
+        $bigger = $_SESSION['id'];
+      }
+      else{
+        $smaller = $_SESSION['id'];
+        $bigger = $loadprofile;
+      }
      
     $s = mysqli_query($dbc,"SELECT * FROM Relationships WHERE user_1 = '".$smaller."' AND user_2 = '".$bigger."'");
     if($s->num_rows ==0){
@@ -228,21 +245,21 @@ $(document).ready(function() {
     echo '<button id="add" style="margin-bottom:20px;" class = "btn-lg btn-primary" role="button">Add Friend</button>';
     }
     else{
-    	$row2 = mysqli_fetch_array($s,MYSQLI_ASSOC);
-		$status = $row2['status'];
-		$last_action = $row2['last_action'];
-		if($status == "accepted"){
-		echo '<h4 style="color:green"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Friends</h4>';
-		}
-    	else if($status == "pending"){
-    	echo '<h4 style="color:orange"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Friend Request Pending</h4>';
-    	}
-    	else if($status == "blocked"){
-    	echo '<h4 style="color:red"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Blocked</h4>';
-    	}
-    	
-    	}   
-    	 ?>
+      $row2 = mysqli_fetch_array($s,MYSQLI_ASSOC);
+    $status = $row2['status'];
+    $last_action = $row2['last_action'];
+    if($status == "accepted"){
+    echo '<h4 style="color:green"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Friends</h4>';
+    }
+      else if($status == "pending"){
+      echo '<h4 style="color:orange"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Friend Request Pending</h4>';
+      }
+      else if($status == "blocked"){
+      echo '<h4 style="color:red"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Blocked</h4>';
+      }
+      
+      }   
+       ?>
         
         
         <?php 
@@ -252,28 +269,28 @@ $(document).ready(function() {
         $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
          while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
          if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
-		 	if($rowsm["user_1"] != $smaller){
-		 	
-		 		array_push($arrs,$rowsm["user_1"]);
-		 	}
-		 	else{
-		 		array_push($arrs,$rowsm["user_2"]);
-		 		}
-		 	}
-		 }
-		while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
+      if($rowsm["user_1"] != $smaller){
+      
+        array_push($arrs,$rowsm["user_1"]);
+      }
+      else{
+        array_push($arrs,$rowsm["user_2"]);
+        }
+      }
+     }
+    while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
          if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
-		 	if($rowbi["user_1"] != $bigger){
-		 	
-		 		array_push($arrb,$rowbi["user_1"]);
-		 	}
-		 	else{
-		 		array_push($arrb,$rowbi["user_2"]);
-		 		}
-		 	}
-		 }
-		 $mfriends = array_intersect($arrb,$arrs);
-		$mutual = sizeof($mfriends);
+      if($rowbi["user_1"] != $bigger){
+      
+        array_push($arrb,$rowbi["user_1"]);
+      }
+      else{
+        array_push($arrb,$rowbi["user_2"]);
+        }
+      }
+     }
+     $mfriends = array_intersect($arrb,$arrs);
+    $mutual = sizeof($mfriends);
         }
         if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0))){
          echo "<h3>$name</h3>";
@@ -286,11 +303,11 @@ $(document).ready(function() {
         }
         else{
        
-	
-	?>
+  
+  ?>
  
 
-		
+    
          <h3><?php echo $name; ?></h3>
         <p>Lives in <?php echo $location; ?></p>
         <p>Gender <?php echo $sex; ?></p>
@@ -331,12 +348,9 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 });
      
 </script>    
-
-<script type="text/javascript">
-  
-</script>
     
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
+      Photos
 
       <script type="text/javascript">
         $(document).ready(function() {
@@ -485,17 +499,75 @@ $("#sn").find("#fcircles").addClass("activejumbo");
             </div>
           </div>
           <br>
-        </div>        
+        </div>
+ 
+      <!--Put photos stuff here-->
       
-      </div> <!--End of photo jumbotron-->
+      
+         
+      
+      </div> <!--End of photo stuff-->
       
       
        <div class="jumbotron col-md-6 feed" id="fblog">
-       Blog
+       Blog Posts:
        
        
        <!--Put blog stuff here-->
+
+        <?php 
+       $user_id = $loadprofile;
+  $query = "SELECT * FROM posts WHERE user_id='".$user_id."' ORDER BY id DESC";
+  $posts = mysqli_query($dbc, $query);
+  echo $posts->num_rows;
+?>
        
+    <div class="containter">
+      <header>
+        <?php if($_SESSION['id'] == $loadprofile){?>
+        <h1>My Blog</h1>
+        <?php } ?>
+      </header>
+      <div class = "row" id="posts">
+        <ul>
+          <?php while($row = mysqli_fetch_array($posts,MYSQLI_ASSOC)) : ?>
+            <li class="post">
+              <span><?php echo $row['title'] ?></span>
+              <span><?php echo $row['date'] ?></span>
+              <?php echo $row['content'] ?>
+            </li>
+<?php if($_SESSION['id'] == $loadprofile){?>
+            <form method="post" action="delete_entry.php">
+             <input type="hidden" name="post_id" value="<?php echo $row['id']?>" />
+          <input id="show-btn" type="submit" name="submit" value="Delete"/>
+        </form>
+      <?php } ?>
+          <?php endwhile; ?>
+        </ul>
+      </div>
+      
+     
+    </div>
+    <?php if($_SESSION['id'] == $loadprofile){?>
+ <div id="post-form" class="row">
+        <!-- If there was an error in the previous input data, display a message. -->
+        <?php if (isset($_GET['error'])) : ?>
+          <div class="error"><?php echo $_GET['error']; ?></div>
+        <?php endif; ?>
+        <!-- make a post form and submit it to process.php -->
+        <form method="post" action="post_entry.php">
+          <input type="text" id="title" name="title" placeholder="Title"/>
+          <!-- <input type="text" id="content" name="content" placeholder="Enter Content"/> -->
+
+          <textarea rows="5" cols="50" id="content" name="content" placeholder="Enter Content"></textarea>
+<input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['id']?>"/>
+          <input id="show-btn" type="submit" name="submit" value="Post"/>
+        </form>
+
+  
+      </div>
+
+           <?php } ?>  
        
       </div>
       
@@ -508,7 +580,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         {
          $circleid = $row_data['id'];
          $name = $row_data['name'];
-          echo "<li><a href='circles/$circleid'>$name</a></li>";        
+          echo "<a href='circles/$circleid'><div class='circle'>$name</div></a>";        
         }
        ?>
        
@@ -529,23 +601,23 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   
   
   $reclist = array();
-		$checklist = array();
-		$mq = mysqli_query($dbc,"SELECT id FROM Users WHERE location = '".$location."' AND id != '".$_SESSION['id']."'");
-		$x  = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$loadprofile."' OR user_2 = '".$loadprofile."')");
-		 while($rowcheck = mysqli_fetch_array($x,MYSQLI_ASSOC)){
-		 	if($rowcheck["user_1"] == $loadprofile){
-		 		array_push($reclist,$rowcheck["user_2"]);
-		 	}
-		 	else{
-		 			array_push($reclist,$rowcheck["user_1"]);
-		 	}
-		 }
+    $checklist = array();
+    $mq = mysqli_query($dbc,"SELECT id FROM Users WHERE location = '".$location."' AND id != '".$_SESSION['id']."'");
+    $x  = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$loadprofile."' OR user_2 = '".$loadprofile."')");
+     while($rowcheck = mysqli_fetch_array($x,MYSQLI_ASSOC)){
+      if($rowcheck["user_1"] == $loadprofile){
+        array_push($reclist,$rowcheck["user_2"]);
+      }
+      else{
+          array_push($reclist,$rowcheck["user_1"]);
+      }
+     }
 
-		 while(($rowm = mysqli_fetch_array($mq,MYSQLI_ASSOC))){
-		 array_push($checklist,$rowm["id"]);
-		 
-		 }
-		 $publist = array_diff($checklist,$reclist);
+     while(($rowm = mysqli_fetch_array($mq,MYSQLI_ASSOC))){
+     array_push($checklist,$rowm["id"]);
+     
+     }
+     $publist = array_diff($checklist,$reclist);
   
   
   
@@ -558,36 +630,36 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       if($u->num_rows >0){
       echo "<h4>Pending Friend Requests</h4>";
      
-	
-		 while($row5 = mysqli_fetch_array($u,MYSQLI_ASSOC)){
-		 	if($row5["user_1"] == $_SESSION['id']){
-		 		$pendinglist = $row5["user_2"];
-		 	}
-		 	else{
-		 		$pendinglist = $row5["user_1"];
-		 	}
-		
-		 	$p = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$pendinglist."'");
-		 	$row6 = mysqli_fetch_array($p,MYSQLI_ASSOC);
-		 	$pendingnamelist = $row6['name'];
-		 	echo '<div class="btn-group-xs text-right"  role="group" aria-label="..."><a href="profile.php?fid='.$pendinglist.'">'.$pendingnamelist.'</a><button style="margin-left:20px;"class = "btn btn-success accept" value = "'.$pendinglist.'" role="button">Accept</button><button  value = "'.$pendinglist.'"  class = "btn btn-danger decline" role="button">Decline</button></div>';
-		 	echo "<br><br>";
-		 	
-		 }
-		}
-		
-		if(sizeof($publist)>0){
-		echo "<h4>Recommended users to Friend</h4>";
-		 
-		 	
-		
-		 	 foreach($publist as $item){
-		 	 $pname = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$item."'");
-		 	 $namerow = mysqli_fetch_array($pname,MYSQLI_ASSOC);
-		 	echo '<a href="profile.php?fid='.$item.'"> '.$namerow['name'].'</a><br>';
-		 	
-		 }
-		}
+  
+     while($row5 = mysqli_fetch_array($u,MYSQLI_ASSOC)){
+      if($row5["user_1"] == $_SESSION['id']){
+        $pendinglist = $row5["user_2"];
+      }
+      else{
+        $pendinglist = $row5["user_1"];
+      }
+    
+      $p = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$pendinglist."'");
+      $row6 = mysqli_fetch_array($p,MYSQLI_ASSOC);
+      $pendingnamelist = $row6['name'];
+      echo '<div class="btn-group-xs text-right"  role="group" aria-label="..."><a href="profile.php?fid='.$pendinglist.'">'.$pendingnamelist.'</a><button style="margin-left:20px;"class = "btn btn-success accept" value = "'.$pendinglist.'" role="button">Accept</button><button  value = "'.$pendinglist.'"  class = "btn btn-danger decline" role="button">Decline</button></div>';
+      echo "<br><br>";
+      
+     }
+    }
+    
+    if(sizeof($publist)>0){
+    echo "<h4>Recommended users to Friend</h4>";
+     
+      
+    
+       foreach($publist as $item){
+       $pname = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$item."'");
+       $namerow = mysqli_fetch_array($pname,MYSQLI_ASSOC);
+      echo '<a href="profile.php?fid='.$item.'"> '.$namerow['name'].'</a><br>';
+      
+     }
+    }
 }
 
     if($t->num_rows >0){
@@ -596,22 +668,22 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       <h4>Friends  <span style="font-weight:200"> <?php if(isset($mutual)){if($mutual>0){ if($loadprofile != $_SESSION['id']){
       echo "($mutual mutual";  if($mutual>1){echo "friends)";}else{echo " friend)";}}}}?></span></h4>
       <?php
-	
-		 while($row3 = mysqli_fetch_array($t,MYSQLI_ASSOC)){
-		 	if($row3["user_1"] == $loadprofile){
-		 		$friendlist = $row3["user_2"];
-		 	}
-		 	else{
-		 		$friendlist = $row3["user_1"];
-		 	}
-	
-		 	$n = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$friendlist."'");
-		 	$row4 = mysqli_fetch_array($n,MYSQLI_ASSOC);
-		 	$namelist = $row4['name'];
-		 	echo '<a href="profile.php?fid='.$friendlist.'"> '.$namelist.'</a><br>';
-		 	
-		 		 	
-		 }
+  
+     while($row3 = mysqli_fetch_array($t,MYSQLI_ASSOC)){
+      if($row3["user_1"] == $loadprofile){
+        $friendlist = $row3["user_2"];
+      }
+      else{
+        $friendlist = $row3["user_1"];
+      }
+  
+      $n = mysqli_query($dbc,"SELECT name FROM Users WHERE id = '".$friendlist."'");
+      $row4 = mysqli_fetch_array($n,MYSQLI_ASSOC);
+      $namelist = $row4['name'];
+      echo '<a href="profile.php?fid='.$friendlist.'"> '.$namelist.'</a><br>';
+      
+          
+     }
     }
     
 
@@ -623,16 +695,16 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   $j = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$_SESSION['id']."'");
     $rowp = mysqli_fetch_array($j,MYSQLI_ASSOC);
    
-	$namep = $rowp['name'];
-	$sexp= $rowp['sex'];
-	$locationp = $rowp['location'];
-	$emailp = $rowp['email'];
-	//$join = date('d / m / Y', strtotime($row['date_joined']));
-	//$dob = $row['dob'];
-	$privacyp = $rowp['privacy'];
-	//$date1 = new Datetime("now");
-	//$date2 = new DateTime($dob);
-	//$interval = $date1->diff($date2);
+  $namep = $rowp['name'];
+  $sexp= $rowp['sex'];
+  $locationp = $rowp['location'];
+  $emailp = $rowp['email'];
+  //$join = date('d / m / Y', strtotime($row['date_joined']));
+  //$dob = $row['dob'];
+  $privacyp = $rowp['privacy'];
+  //$date1 = new Datetime("now");
+  //$date2 = new DateTime($dob);
+  //$interval = $date1->diff($date2);
 
 
 
@@ -640,36 +712,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 ?>
     </div> <!-- /container -->
 
-    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> <!--MODALS-->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script> 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script> 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <!-- need this - who knew? -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-
-<!--Add Collection Modal-->
-<div class="modal fade" id="addCol" role="dialog">
-  <div class="modal-dialog">
-  
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Create a collection</h4>
-      </div>
-      <div class="modal-body">
-        <textarea name="content_txt" id="addText" cols="45" rows="1" placeholder="Enter collection name"></textarea>
-        <button id="addCollection" type="button" class="btn btn-default" data-dismiss="modal">Add</button>
-      </div>
-    </div>
-    
-  </div>
-</div>
-<!--End of Add Collection Modal-->
-
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <div class="modal fade" id="editinfo">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -696,10 +739,10 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                                 <span class="input-group-addon"><i class="fa fa-venus-mars"></i></span>
        
                                 <select class="form-control" name ="sex" id="sex" required>
-  								<option <?php if($sexp=="Male"){echo 'selected';}?>>Male</option>
-  								<option <?php if($sexp=="Female"){echo 'selected';}?>>Female</option>
-  								<option <?php if($sexp=="Other"){echo 'selected';}?>>Other</option>
-								</select>
+                  <option <?php if($sexp=="Male"){echo 'selected';}?>>Male</option>
+                  <option <?php if($sexp=="Female"){echo 'selected';}?>>Female</option>
+                  <option <?php if($sexp=="Other"){echo 'selected';}?>>Other</option>
+                </select>
                       
                         </div>
                         </div>
@@ -881,7 +924,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
             </div>
 
             <div class="modal-body">
-            	<p class="text-center">Are you sure you want to delete your account?</p>
+              <p class="text-center">Are you sure you want to delete your account?</p>
                 <form id="form" method="POST" action="delete.php" class="form-horizontal text-center" role="form">
                 
                        
@@ -919,11 +962,11 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                                 <span class="input-group-addon"><i class="fa fa-eye-slash"></i></span>
        
                                 <select class="form-control" name ="privacy" id="privacy" required>
-  								<option value ="3" <?php if($privacyp==3){echo 'selected';}?>>Everyone</option>
-  								<option value="2" <?php if($privacyp==2){echo 'selected';}?>>Friends of Friends</option>
-  								<option value ="1" <?php if($privacyp==1){echo 'selected';}?>>Friends Only</option>
-								</select>
-								</div>
+                  <option value ="3" <?php if($privacyp==3){echo 'selected';}?>>Everyone</option>
+                  <option value="2" <?php if($privacyp==2){echo 'selected';}?>>Friends of Friends</option>
+                  <option value ="1" <?php if($privacyp==1){echo 'selected';}?>>Friends Only</option>
+                </select>
+                </div>
                       
                         </div>
                         </div>                   
@@ -1037,6 +1080,71 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     </div>
   </div>
 </div>
+      
+
+        <div class="modal fade" id="addNewPost">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+            Add New Post
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+      <div class="modal-body">
+        <form id="newPostForm" class="form-horizontal" role="form">
+          <div class="form-group">
+            <div class="col-sm-12">
+              <div class="input-group">
+                <input id="title" name="title" data-validation="length" data-validation-length="min1" class="form-control required" type="text" size="16" placeholder="Title" autofocus="autofocus" required/>
+                 <textarea id="content" name="content" data-validation="length" data-validation-length="min1" class="form-control required" type="text" size="16" placeholder="Content" autofocus="autofocus" required></textarea>
+                 <input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['id']?>"/>
+              </div>
+            </div>
+          </div>              
+          <h3  style="color:red" class="blog-errors text-center"></h3> 
+          <!--<input id="show-btn" type="submit" name="submit" value="Post"/>    --> 
+        </form>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.8/jquery.form-validator.min.js"></script>
+        <script>$.validate();</script>
+        <div class="modal-footer">
+          <button id="submitpost" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group" data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>" data-success-text="<span class='glyphicon glyphicon-ok'></span>">Post</button>
+          <script>
+            var $btn = $('#submitpost');
+            $btn.on('click', function(e) {   
+            $.ajax({
+              type: "POST",
+              url: "post_entry.php",
+              data: $('#newPostForm').serialize(), // serializes the form's elements.
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.notitle) { //Returned if any error from process.php
+                                    $('.blog-errors').fadeIn(1000).html(data.errors.notitle); //Throw relevant error
+                                }
+                                if (data.errors.failed) { //Returned if any error from process.php
+                                    $('.blog-errors').fadeIn(1000).html(data.errors.failed); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.blog-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                                     setTimeout(function() {
+                $('#addNewPost').modal('hide');
+            }, 350);
+    $("#fblog").load(location.href+" #fblog>*","").addClass("activejumbo");
+
+
+                                }
+                            }
+        });
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+});
+</script>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      
   </body>
 </html>
 <?php
