@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 05, 2017 at 01:08 PM
+-- Generation Time: Mar 06, 2017 at 01:03 AM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 5.6.30
 
@@ -33,6 +33,14 @@ CREATE TABLE `photo` (
   `refLoc` text NOT NULL,
   `date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `photo`
+--
+
+INSERT INTO `photo` (`photoID`, `albumID`, `userID`, `refLoc`, `date`) VALUES
+(1, 1, 1, 'uploads/QWEE3475.jpg', '2017-03-06 00:01:32'),
+(2, 1, 1, 'uploads/CIGC0774.jpg', '2017-03-06 00:01:46');
 
 --
 -- Indexes for dumped tables
