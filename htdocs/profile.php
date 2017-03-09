@@ -418,8 +418,6 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         });
       </script>
 
-        Photos
-
         <?php
           $owner = $loadprofile; //whose pictures you're looking at
           $user = $_SESSION['id']; //who you are
@@ -428,7 +426,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         ?>
 
    
-        <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width:565px;">
+        <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width100%;">
         <h2><strong>Collections</strong></h2>
           
           <div id="collectionGrid" style="background-color:white; width:500px;">

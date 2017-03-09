@@ -33,7 +33,7 @@ $(document).ready(function() {
           return false;
       }
 
-      var myData = 'content_txt='+ $("#addText").val()+'&user='+ <?php echo $user; ?>;
+      var myData = 'content_txt='+ $("#addText").val()+'&user='+ <?php echo $_POST['user']; ?>;
 
       $.ajax({
           type: "POST", // HTTP method POST or GET
