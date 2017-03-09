@@ -13,11 +13,6 @@ $currentUser = 1; // $loadprofile;
 if(isset($_POST['album'])){
 	$currentAlbum = $_POST['album'];
 }
-// else{
-// 	$currentAlbum = 12;
-// }
-
-// echo 'user is '.$currentUser.' and my album no is '.$currentAlbum;
 
 //check extension
 if($imageFileType != "jpg" && $imageFileType != "jpeg" && $imageFileType != "png" && $imageFileType != "gif" && $imageFileType != "JPG"){
@@ -39,16 +34,12 @@ else{
 }
 
 function addPhoto(&$target_file,&$currentUser,&$currentAlbum,&$dbc){
-	// //get album name with number...
-	// $quer = "SELECT albumName FROM album WHERE albumID = ".$currentAlbum."";
-	// $res = mysqli_query($dbc,$quer);
-	// $album = mysqli_fetch_array($res);
 
 	//if success in uploading file to the uploads directory then I need to add a row in the photo table.
 	$sql = "INSERT INTO photo VALUES(DEFAULT,'$currentAlbum','$currentUser','$target_file',CURRENT_TIMESTAMP)";//photoid, albumid, userid, refloc, date
 	$res = mysqli_query($dbc,$sql);
 
-	$quer = "SELECT MAX(photoID) as lastID FROM photo"; //WHERE albumName = '$name'"; //get most recent addition -> use MAX i think?
+	$quer = "SELECT MAX(photoID) as lastID FROM photo";
 	$res = mysqli_query($dbc,$quer);
 	$photo = mysqli_fetch_array($res);
 
@@ -60,13 +51,13 @@ function addPhoto(&$target_file,&$currentUser,&$currentAlbum,&$dbc){
 	    //main box
 	    echo "<div style='position:relative;'>"; 
 	    	echo "<a class='deleteImg' id=".$photoNum.">";
-			    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+			    echo "<div id='deleteX'>";
 			    	//image
 			    	echo "<img src='icons/close.png' style='height:30px; ' />";
 			    echo "</div>";
 		    echo "</a>";
 	    	//image button
-	    	echo "<div style='margin:7px; width:150px; height:150px; background-color:skyblue; float:left; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); overflow:hidden;'>";
+	    	echo "<div id='imageSquare'>";
 
 		    list($width,$height) = getimagesize(''.$photoName.'');
 		    if($width>$height){

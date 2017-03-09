@@ -6,9 +6,9 @@ require_once('tablecheck.php');
 
 if(isset($_POST['user'])&&isset($_POST['albumId'])){
 	$user = $_POST['user'];
-	$albumId = $_POST['albumId'];
+	$albumNum = $_POST['albumId'];
 
-	$quer = "SELECT * FROM album WHERE albumID = '".$albumId."'";
+	$quer = "SELECT * FROM album WHERE albumID = '".$albumNum."'";
     $album = mysqli_query($dbc,$quer);
     $row = mysqli_fetch_array($album);
 	$name = $row['albumName'];
@@ -20,34 +20,25 @@ else{
 	$name = 'poppy';
 }
 
-	// echo 'this is the album owner '.$owner.' and this is the current user '.$user;
+	// echo 'this is the album num '.$albumNum.' and this is the current user '.$user;
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<!-- <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>  -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>	
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <!-- need this - who knew? -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
 
 <script type="text/javascript">
 var count = 0;
 $(document).ready(function() {
 	$("#addPhoto").click(function(e){ 
-		// alert('adding a photo here <?php echo $name ?>');
+		// alert('adding a photo here '+<?php echo $albumNum ?>);
 		count++;
 
 		if(count==1){ //to stop the rabbit hole multi send loop thing
 			var formData = new FormData();
 
 	  		formData.append('img', $('input[type=file]')[0].files[0]);
-	  		formData.append('album','<?php echo $albumId?>');
+	  		formData.append('album','<?php echo $albumNum?>');
 
 	        $.ajax({
 		        type: "POST", // HTTP method POST or GET
@@ -95,13 +86,14 @@ $(document).ready(function() {
 	});
 });
 $(document).ready(function() {
-	$("body").on("click","#collectionBox .img",function (e) {
+	$("body").on("click","#collectionBox .img",function (e) {		
 		// alert('clicked on image');
 		count++;
 
 		if(count==1){ //to stop the rabbit hole multi send loop thing
+        	// alert('about to look at this photo which is in album '+<?php echo $albumNum ?>+' or is actually '+$(this).attr('name'));
 
-			var myData = 'user='+<?php echo $user ?>+'&photoId='+$(this).attr('id');
+			var myData = 'user='+<?php echo $user ?>+'&photoId='+$(this).attr('id')+'&album='+$(this).attr('name');
 			$.post("image.php #hey",myData,function(data){
 				$("#collectionBox").html(data);
 				count = 0;
@@ -109,25 +101,23 @@ $(document).ready(function() {
 		}
 	});
 });
-$(document).ready(function() {
+$(document).ready(function(){
 	$("body").on("click","#collectionBox .backButton",function (e) {
 		count++;
-
-		if(count==1){ //to stop the rabbit hole multi send loop thing
-
+		if(count==1){/*to stop the rabbit hole multi send loop thing*/
 			var toWhere = $(this).attr('id');
 			if(toWhere=='toCollection'){
-				// alert('trying to go back to collection view');
-				var myData = 'user='+ <?php echo $user ?>+'&owner='+<?php echo $owner ?>;
-				$.post("collections.php #collectionBox",myData,function(data){
+				// alert('leaving photos');
+				var myData = 'user='+ <?php echo $user ?>+'&owner='+<?php echo $owner ?>+'&albumId='+<?php echo $albumNum ?>;
+				$.post("collections.php #hola",myData,function(data){
 					$("#collectionBox").html(data);
 					count = 0;
 				});
-				// $("#collectionBox").load("collections.php #collectionBox");
 			}
-			else{
-				// alert('going to back to photos view');
-				var myData = 'user='+ <?php echo $user ?>+'&albumId='+<?php echo $albumId ?>;
+			else if(toWhere=='toPhotos'){
+				// alert('leaving image');				
+				// alert('going to collection '+$(this).attr('name')+' or maybe '+<?php echo $albumNum ?>);
+				var myData = 'user='+ <?php echo $user ?>+'&albumId='+$(this).attr('name');
 				$.post("photos.php #hi",myData,function(data){
 					$("#collectionBox").html(data);
 					count = 0;
@@ -143,7 +133,7 @@ $(document).ready(function() {
 
 		if(count==1){ //to stop the rabbit hole multi send loop thing
 
-			var myData = 'content_txt='+ $("#contentText").val()+'&user='+ <?php echo $user; ?>+'&photoId='+$(this).attr('id')+'&albumId='+<?php echo $albumId; ?>;
+			var myData = 'content_txt='+ $("#contentText").val()+'&user='+ <?php echo $user; ?>+'&photoId='+$(this).attr('id')+'&albumId='+<?php echo $albumNum; ?>;
 
 	        $.ajax({
 	            type: "POST", // HTTP method POST or GET
@@ -172,18 +162,18 @@ $(document).ready(function() {
 </head>
 <body>
 
-	<div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; left:0.1vw; width:565px;">
+	<div id="collectionBox" style=" padding: 30px; position:absolute; left:0vw; width:565px;">
 		<!--whole page-->
-		<div id="hi" style="position:relative; top:-50px;">
-		<a class="backButton" id="toCollection"><div style="position:absolute; left:-30px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
+		<div id="hi">
+		<a class="backButton" id="toCollection"><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
       	<br>
 		<h2><strong>Collections ></strong> <i style="font-size: 25px;"><?php echo $name ?></i></h2>
 
-			<div id="collectionGrid" style="background-color:white; width:500px;">
+			<div id="collectionGrid" style=" width:500px;">
 				<div>
 					<?php
 
-					$quer = "SELECT * FROM photo WHERE albumID = '$albumId'";
+					$quer = "SELECT * FROM photo WHERE albumID = '$albumNum'";
 					$photos = mysqli_query($dbc,$quer);					
 
 					$maxcols = 3;
@@ -201,6 +191,9 @@ $(document).ready(function() {
 
 					    $photoNum = $image['photoID'];
 					    $photoName = $image['refLoc'];
+					    $albumId = $image['albumID'];
+
+					    // $albumNum = $albumId;
 
 					    
 					    echo "<td>";
@@ -209,27 +202,27 @@ $(document).ready(function() {
 					    //delete box 
 					    if($owner==$user){ 
 					    	echo "<a class='deleteImg' id=".$photoNum.">";
-							    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+							    echo "<div id='deleteX'>";
 							    	//image
 							    	echo "<img src='icons/close.png' style='height:30px; ' />";
 							    echo "</div>";
 						    echo "</a>";
 						}
 					    	//image button
-					    	echo "<div style='margin:7px; width:150px; height:150px; background-color:skyblue; float:left; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); overflow:hidden;'>";
+					    	echo "<div id='imageSquare'>";
 
 						    list($width,$height) = getimagesize(''.$photoName.'');
 						    if($width>$height){
-						    	echo "<a class='img' id='".$photoNum."'>";
-	                            	echo "<img src='".$photoName."' height='150px'>";
+						    	echo "<a class='img' id='".$photoNum."' name='".$albumId."'>";
+	                            	echo "<img src='".$photoName."' height='150px' style='image-orientation: 0deg;'>";
 	                            echo "</a>";
 	                        }
 	                        else{
-	                        	echo "<a class='img' id='".$photoNum."'>";
-	                            	echo "<img src='".$photoName."' width='150px'>";
+	                        	echo "<a class='img' id='".$photoNum."' name='".$albumId."'>";
+	                            	echo "<img src='".$photoName."' width='150px' style='image-orientation: 0deg;'>";
 	                            echo "</a>";
 	                        }
-			    		
+			    			
 					    	echo "</div>";
 					    echo "</td>";
 
@@ -244,8 +237,8 @@ $(document).ready(function() {
 						//add photo square
 						if($owner==$user){ 
 							echo "<td>";
-							echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
-							echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+							echo '<button id="addButton" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
+							echo '<p id="addButtonText">ADD</p>';
 							echo '</button>';
 
 						    echo "</td>";
@@ -256,8 +249,8 @@ $(document).ready(function() {
 						//add photo square
 						if($owner==$user){ 
 							echo "<td>";
-							echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
-							echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+							echo '<button id="addButton" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addPhot">';
+							echo '<p id="addButtonText">ADD</p>';
 							echo '</button>';
 
 						    echo "</td>";
@@ -288,13 +281,13 @@ $(document).ready(function() {
 		          <button type="button" class="close" data-dismiss="modal">&times;</button>
 		          <h4 class="modal-title">Upload a photo</h4>
 		        </div>
-		        <div class="modal-body">
+		        <div class="modal-body" style="position: relative; left: 30%;">
 		        
 		        	<form method="post" id="uploadForm" action=" " enctype="multipart/form-data">
-						<input style="margin-left:30%;" type="file" name="addP" id="addP">
+						<input  type="file" name="addP" id="addP"> <!--style="margin-left:30%;"-->
 						<br>
 						<br>
-						<button style="margin-left:40%; position:relative; bottom:0px;" class="btn btn-default" data-dismiss="modal" id="addPhoto" name="submit">Add</button>
+						<button style="margin-left:10%; position:relative; bottom:0px;" class="btn btn-default" data-dismiss="modal" id="addPhoto" name="submit">Add</button>
 						<br>
 						<br>
 						

@@ -18,9 +18,6 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
 
 	//sanitize post value, PHP filter FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH Strip tags, encode special characters.
 	$contentToSave = filter_var($_POST["content_txt"],FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH); 
-	// $photoID = 1;
-	// $user = 1;
-	// $albumID = 2;
 	date_default_timezone_set("Europe/London");
 	$time = date('H:i:s');
 	$date = date('Y-m-d',time());
@@ -32,8 +29,6 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
     $row = mysqli_fetch_array($res);
 
     $userName = $row['name'];
-
-	// echo 'it has been inserted yay!';
 	
 	if($insert_row)
 	{
@@ -47,8 +42,6 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
 	  	$dbc->close(); //close db connection
 
 	}else{
-		
-		//header('HTTP/1.1 500 '.mysql_error()); //display sql errors.. must not output sql errors in live mode.
 		header('HTTP/1.1 500 Looks like mysql error, could not insert record!');
 		exit();
 	}

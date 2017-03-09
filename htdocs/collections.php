@@ -1,16 +1,22 @@
 <?php
 require_once('db_connect.php');   
 require_once('tablecheck.php');     
-// $photoId = 1;
-// $owner = 1; //loadprofile
-// $user = 1; //session_id
+if(isset($_POST['owner'])&&isset($_POST['user'])){
+  $owner = $_POST['owner'];
+  $user = $_POST['user'];
+  $albumId = $_POST['albumId'];
+}
+else{
+  $owner = 1;
+  $user = 1;
+} 
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
 <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
 <!-- <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>  -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>	
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <!-- need this - who knew? -->
@@ -33,7 +39,7 @@ $(document).ready(function() {
           return false;
       }
 
-      var myData = 'content_txt='+ $("#addText").val()+'&user='+ <?php echo $_POST['user']; ?>;
+      var myData = 'content_txt='+ $("#addText").val()+'&user='+ <?php echo $user; ?>; //replacing this with a <br>
 
       $.ajax({
           type: "POST", // HTTP method POST or GET
@@ -87,6 +93,7 @@ $(document).ready(function() {
     count++;
 
     if(count==1){ //to stop the rabbit hole multi send loop thing
+      // alert('looking at album '+$(this).attr('id'));
 
   		var myData = 'user='+ <?php echo $user ?>+'&albumId='+ $(this).attr('id');
   		$.post("photos.php #hi",myData,function(data){
@@ -102,30 +109,14 @@ $(document).ready(function() {
 
 </head>
 <body>
-
-	<h2><strong>Collections</strong></h2>
-      <br>
-
-      <?php
-          if(isset($_POST['owner'])&&isset($_POST['user'])){
-            $owner = $_POST['owner'];
-            $user = $_POST['user'];
-          }
-          else{
-            $owner = 1;
-            $user = 1;
-          }
-          
-
-          // echo 'owner: '.$loadprofile.' and the user: '.$_SESSION['id'];
-        ?>
    
-        <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width:565px;">
-        <h2><strong>Collections</strong></h2>
+        <div id="collectionBox" >
+        
 
-        <div id="hola">              
+        <div id="hola" class="collectionInsert"> 
+        <h2><strong>Collections</strong></h2>            
           
-          <div id="collectionGrid" style="background-color:white; width:500px;">
+          <div id="collectionGrid">
             <div>
             <?php
             
@@ -155,7 +146,7 @@ $(document).ready(function() {
                 //delete button
                 if($owner==$user){
                   echo "<a class='deleteCol' id='".$albumId."'>";
-                    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+                    echo "<div id='deleteX'>";
                       //image
                       echo "<img src='icons/close.png' style='height:30px; ' />";
                     echo "</div>";
@@ -163,8 +154,8 @@ $(document).ready(function() {
                 }
                   //main button
                   echo "<a class='view' id='".$albumId."'>";
-                    echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
-                      echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
+                    echo "<div id='colSquare'>";
+                      echo "<p id='colName'>".$name."</p>";
                     echo "</div>";
                   echo "</a>";
                 echo "</div>";
@@ -183,8 +174,8 @@ $(document).ready(function() {
               //add collection square
               if($owner==$user){
                 echo "<td>";
-                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '<button id="addButton" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">'; 
+                echo '<p id="addButtonText">ADD</p>';
                 echo '</button>';
 
                 echo "</td>";
@@ -194,8 +185,8 @@ $(document).ready(function() {
               //add collection square
               if($owner==$user){
                 echo "<td>";
-                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '<button id="addButton" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p id="addButtonText">ADD</p>';
                 echo '</button>';
 
                   echo "</td>";
@@ -230,8 +221,8 @@ $(document).ready(function() {
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title">Create a collection</h4>
             </div>
-            <div class="modal-body">
-              <textarea name="content_txt" id="addText" cols="45" rows="1" placeholder="Enter collection name"></textarea>
+            <div class="modal-body" style="position: relative; left:27%;">
+              <input name="content_txt" type="text" id="addText" cols="45" rows="1" placeholder="Enter collection name">
               <button id="addCollection" class="btn btn-default" data-dismiss="modal">Add</button>
             </div>
           </div>

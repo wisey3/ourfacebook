@@ -59,6 +59,9 @@ else{
  <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
              <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
+    <!--style sheet for the photos etc-->
+    <link rel="stylesheet" href="css/photoStyle.css">
+
 
   </head>
 
@@ -349,71 +352,79 @@ $("#sn").find("#fcircles").addClass("activejumbo");
      
 </script>    
     
-      <div class="jumbotron col-md-6 activejumbo feed" id="fphotos">
-      Photos
+      <div class="jumbotron col-md-6 activejumbo feed" id="fphotos" style="background-color: white;">
 
       <!--My Ajax buttons (photos)-->
       <script type="text/javascript">
+      var count = 0;
         $(document).ready(function() {
           $("body").on("click","#collectionBox .view",function (e) {
-            // alert('looking at an album');
+            count++;
 
-            var myData = 'user='+ <?php echo $_SESSION['id'] ?>+'&albumId='+ $(this).attr('id');
-            $.post("photos.php #hi",myData,function(data){
-              $("#collectionBox").html(data);
-            });
+            if(count==1){ //to stop the rabbit hole multi send loop thing
 
+              var myData = 'user='+ <?php echo $_SESSION['id'] ?>+'&albumId='+ $(this).attr('id');
+              $.post("photos.php #hi",myData,function(data){
+                $("#collectionBox").html(data);
+                count = 0;
+              });
+            } 
           });
         });
         $(document).ready(function() {
           $("body").on("click","#addCol .addItem",function (e) {
-            // if($(this).attr('id')=="addCollection"){
-            //   alert('adding a collection');
-            // }      
-            if($("#addText").val()==''){        
-                alert("Please enter some text!");
-                return false;
-            }
+            count++;
 
-            var myData = 'user='+<?php echo $_SESSION['id']?>+'&content_txt='+$("#addText").val();
-
-            $.ajax({
-              type: "POST", // HTTP method POST or GET
-              url: "addCollection.php", //Where to make Ajax calls
-              dataType:"text", // Data type, HTML, json etc.
-              data:myData,
-              success:function(response){
-                  $("#tableCol").append(response); //responds -> <ul>
-                  $("#addText").val(''); //empty text field on successful
-              },
-              error:function (xhr, ajaxOptions, thrownError){
-                  $("#addCollection").show(); //show submit button
-                  alert(thrownError);
+            if(count==1){ //to stop the rabbit hole multi send loop thing   
+              if($("#addText").val()==''){        
+                  alert("Please enter some text!");
+                  return false;
               }
-            });
+
+              var myData = 'user='+<?php echo $_SESSION['id']?>+'&content_txt='+$("#addText").val();
+
+              $.ajax({
+                type: "POST", // HTTP method POST or GET
+                url: "addCollection.php", //Where to make Ajax calls
+                dataType:"text", // Data type, HTML, json etc.
+                data:myData,
+                success:function(response){
+                    $("#tableCol").append(response); //responds -> <ul>
+                    $("#addText").val(''); //empty text field on successful
+                    count = 0;
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    $("#addCollection").show(); //show submit button
+                    alert(thrownError);
+                }
+              });
+            }
           });
         });
         $(document).ready(function() {
           $("body").on("click","#collectionBox .deleteCol",function (e) {
-            // alert('trying to delete collection');
+            count++;
 
-            var myData = 'albumID='+ $(this).attr('id')+'&type=Collection';
+            if(count==1){ //to stop the rabbit hole multi send loop thing
 
-            // alert(myData);
-            $(this).closest('td').remove();
+              var myData = 'albumID='+ $(this).attr('id')+'&type=Collection';
 
-            $.ajax({
-                type: "POST", // HTTP method POST or GET
-                url: "deleteimage.php", //Where to make Ajax calls
-                data:myData,
-                dataType: "text",
-                success:function(data){         
-                  alert('Collection Deleted');
-                },        
-                error:function (xhr, ajaxOptions, thrownError){
-                    alert('oh bollocks');
-                }
-            });
+              $(this).closest('td').remove();
+
+              $.ajax({
+                  type: "POST", // HTTP method POST or GET
+                  url: "deleteimage.php", //Where to make Ajax calls
+                  data:myData,
+                  dataType: "text",
+                  success:function(data){         
+                    alert('Collection Deleted');
+                    count = 0;
+                  },        
+                  error:function (xhr, ajaxOptions, thrownError){
+                      alert('oh bollocks');
+                  }
+              });
+            }
           });
         });
       </script>
@@ -421,15 +432,13 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         <?php
           $owner = $loadprofile; //whose pictures you're looking at
           $user = $_SESSION['id']; //who you are
-
-
         ?>
 
    
-        <div id="collectionBox" style="background-color:white; padding: 30px; position:absolute; top:3px; left:0.2vw; width100%;">
+        <div id="collectionBox" class="collectionInsert" >
         <h2><strong>Collections</strong></h2>
           
-          <div id="collectionGrid" style="background-color:white; width:500px;">
+          <div id="collectionGrid" >
             <div>
             <?php
             
@@ -459,16 +468,16 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                 //delete button
                 if($owner==$user){
                   echo "<a class='deleteCol' id='".$albumId."'>";
-                    echo "<div style='background-color:white; margin:6px; height:30px; width:30px; opacity:0.5; right:0; position:absolute; z-index:100;'>";
+                    echo "<div id='deleteX'>";
                       //image
-                      echo "<img src='icons/close.png' style='height:30px; ' />";
+                      echo "<img src='icons/close.png' height='30px' />";
                     echo "</div>";
                   echo "</a>";
                 }
                   //main button
                   echo "<a class='view' id='".$albumId."'>";
-                    echo "<div style='margin:7px; width:150px; height:150px; background-color:dodgerblue; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;'>";
-                      echo "<p style='font-size:30px; text-align: center; position: relative; top: 50%; transform: translateY(-50%); color:powderblue;'>".$name."</p>";
+                    echo "<div id='colSquare'>";
+                      echo "<p id='colName'>".$name."</p>";
                     echo "</div>";
                   echo "</a>";
                 echo "</div>";
@@ -485,8 +494,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
               //add collection square
               if($owner==$user){
                 echo "<td>";
-                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '<button id="addButton" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p id="addButtonText">ADD</p>';
                 echo '</button>';
 
                 echo "</td>";
@@ -496,8 +505,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
               //add collection square
               if($owner==$user){
                 echo "<td>";
-                echo '<button style="margin:7px; width:150px; height:150px; background-color:whitesmoke; box-shadow: 1px 2px 4px rgba(0, 0, 0, .5); float:left;" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
-                echo '<p style="font-size:30px; position: relative; top: 50%; transform: translateY(10%); color:grey;">ADD</p>';
+                echo '<button id="addButton" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addCol">';
+                echo '<p id="addButtonText">ADD</p>';
                 echo '</button>';
 
                   echo "</td>";
@@ -739,8 +748,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">Create a collection</h4>
       </div>
-      <div class="modal-body">
-        <textarea name="content_txt" id="addText" cols="45" rows="1" placeholder="Enter collection name"></textarea>
+      <div class="modal-body" style="position: relative; left:27%;">
+        <input name="content_txt" type="text" id="addText" cols="45" rows="1" placeholder="Enter collection name">
         <button id="addCollection" type="button" class="addItem" data-dismiss="modal">Add</button><!--class="btn btn-default"-->
       </div>
     </div>
