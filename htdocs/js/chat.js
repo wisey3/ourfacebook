@@ -60,10 +60,10 @@ function restructureChatBoxes() {
 	}
 }
 function chatWith(chatuser) {
-	var sound = new Audio('sound.wav');
 	createChatBox(chatuser);
-	/*
 	$("#chatbox_"+chatuser+" .chatboxtextarea").focus();
+	/*
+	var sound = new Audio('sound.wav');
 	sound.play();
 	$.ajax({
 		type: "GET",
@@ -76,8 +76,22 @@ function chatWith(chatuser) {
 	    	}
 		}
 	});
-	*/
 
+	chat.php:
+	function chatHistory() {
+	if(isset($_GET['userID']))
+	{
+		$uid = $_GET['userID'];
+		$dbc = mysqli_connect('localhost','root','P1zzaRat3013', 'sn_coursework') OR die(mysqli_connect_error());
+		$uid = $_GET['userID'];
+		$sql = "SELECT * FROM chat WHERE chat.to in ('".mysqli_real_escape_string($dbc, $_SESSION["id"])."', '".$uid."') and chat.from in ('".mysqli_real_escape_string($dbc, $_SESSION["id"])."', '".$uid."') order by id ASC";
+		$r = mysqli_query($dbc,$sql);
+	    $chat = mysqli_fetch_array($r,MYSQLI_ASSOC)
+		$output[] = $chat;                                 
+  		print(json_encode($output));
+  	}
+  }
+	*/
 }
 
 function createChatBox(chatboxtitle,minimizeChatBox) {
