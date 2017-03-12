@@ -21,7 +21,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 session_start();
 $dbc = mysqli_connect('localhost','root','P1zzaRat3013', 'sn_coursework') OR die(mysqli_connect_error());
 if ($_GET['action'] == "chatheartbeat") { chatHeartbeat(); } 
-if ($_GET['action'] == "gethistory") { chatHistory(); } 
 if ($_GET['action'] == "sendchat") { sendChat(); } 
 if ($_GET['action'] == "closechat") { closeChat(); } 
 if ($_GET['action'] == "startchatsession") { startChatSession(); } 
@@ -34,19 +33,6 @@ if (!isset($_SESSION['openChatBoxes'])) {
 	$_SESSION['openChatBoxes'] = array();	
 }
 
-function chatHistory() {
-	if(isset($_GET['userID']))
-	{
-		$uid = $_GET['userID'];
-		$dbc = mysqli_connect('localhost','root','P1zzaRat3013', 'sn_coursework') OR die(mysqli_connect_error());
-		$uid = $_GET['userID'];
-		$sql = "SELECT * FROM chat WHERE chat.to in ('".mysqli_real_escape_string($dbc, $_SESSION["id"])."', '".$uid."') and chat.from in ('".mysqli_real_escape_string($dbc, $_SESSION["id"])."', '".$uid."') order by id ASC";
-		$r = mysqli_query($dbc,$sql);
-	    $chat = mysqli_fetch_array($r,MYSQLI_ASSOC)
-		$output[] = $chat;                                 
-  		print(json_encode($output));
-  	}
-  }
 
 function chatHeartbeat() {
 	$dbc = mysqli_connect('localhost','root','P1zzaRat3013', 'sn_coursework') OR die(mysqli_connect_error());
