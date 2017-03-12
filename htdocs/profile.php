@@ -47,26 +47,54 @@ else{
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="refresh" content="500">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="../../favicon.ico">
-
     <title>Social Network</title>
-
-
+    <link rel="icon" href="../../favicon.ico">
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
+    <link href="css/chatstyle.css" rel="stylesheet">
     <link rel="stylesheet" href="css/buttons.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
- <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
-             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-
-    <!--style sheet for the photos etc-->
+        <!--style sheet for the photos etc-->
     <link rel="stylesheet" href="css/photoStyle.css">
-
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> -->
   </head>
 
   <body>
+    <script> 
+  var stillAlive = window.setInterval(function () {
+    
+    $.get("online.php");
+  }, 6000);
+  </script>
 
+  <link type="text/css" rel="stylesheet" media="all" href="css/chat.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="css/screen.css" />
+  <div class="chat_box">
+    <div class="chat_head"> Friends</div>
+    <div class="chat_body"> 
+  <?php 
+  $friendQuery = mysqli_query($dbc,"SELECT name, id , lastActive FROM Users WHERE id IN ( SELECT user_2 from Relationships where user_1 = '".$_SESSION['id']."' AND status= 'accepted' UNION SELECT user_1 from Relationships where user_2 = '".$_SESSION['id']."' AND status= 'accepted') ORDER BY -lastActive");
+  while($row_data = mysqli_fetch_array($friendQuery,MYSQLI_ASSOC))
+    {
+      $name = $row_data['name'];
+      $id = $row_data['id'];
+      $lastActive = $row_data['lastActive'];
+      if(strtotime($lastActive) > strtotime("-10 minutes")) {
+        echo "<div class='user'><a href='javascript:void(0)' onclick='javascript:chatWith($id)'><span>$name</span></a></div>";
+      }
+      else{
+        echo "<div class='userOffline'><a href='javascript:void(0)' onclick='javascript:chatWith($id)'><span>$name</span></a></div>";
+      } 
+    }
+  ?>
+    </div>
+  </div>
+  <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/chat.js"></script> 
+<script type="text/javascript" src="js/friendlistboxscript.js"></script> 
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <div class="navbar-header">
