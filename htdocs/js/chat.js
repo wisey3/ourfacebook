@@ -62,6 +62,7 @@ function restructureChatBoxes() {
 function chatWith(chatuser) {
 	var sound = new Audio('sound.wav');
 	createChatBox(chatuser);
+	/*
 	$("#chatbox_"+chatuser+" .chatboxtextarea").focus();
 	sound.play();
 	$.ajax({
@@ -75,6 +76,7 @@ function chatWith(chatuser) {
 	    	}
 		}
 	});
+	*/
 
 }
 
