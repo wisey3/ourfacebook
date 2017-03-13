@@ -118,7 +118,7 @@ else{
               <li class="dropdown-header">Profile</li>
                 <li><a href="#" data-toggle="modal" data-target="#editinfo" >Edit Profile</a></li>
                 <li><a href="#" data-toggle="modal" data-target="#changepassword">Change Password</a></li>
-                
+                <li><a href="xmlwrite.php" >Export all profile to XML</a></li>
                 <li><a href="#" data-toggle="modal" data-target="#delete">Delete Account</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Privacy</li>
@@ -993,7 +993,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header text-center">
-            NOTE: Deleting your account is irreversible!
+            NOTE: Deleting your account is irreversible without saving an XML of your data!
+            Please download an XML of your data to import in the future.
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
