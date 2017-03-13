@@ -8,6 +8,16 @@ body {
 
 
 }
+
+.importp {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.importp .btn{
+width: 40%;
+margin: 0 auto;
+}
 .back{
 
 

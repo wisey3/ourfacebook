@@ -43,7 +43,7 @@ session_destroy();
       </form>
       
        <div class="register"><p>Don't have an account?</p> <button class="btn btn-success btn-block" data-toggle="modal" data-target="#signup" type="submit">Sign up</button></div>
-       <div class="import"><p>Had an account before?</p> <button class="btn btn-info btn-block" data-toggle="modal" data-target="#import" type="submit">Import your XML profile</button></div>
+       <div class="importp"><p>Had an account before?</p> <button class="btn btn-info btn-block" data-toggle="modal" data-target="#import" type="submit">Import your XML profile</button></div>
 
     </div> <!-- /container -->
     </section>
