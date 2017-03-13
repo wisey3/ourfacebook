@@ -14,14 +14,14 @@ session_destroy();
     <link rel="icon" href="../../favicon.ico">
 
     <title>Social Network</title>
-<script src="jquery-3.1.1.min.js"></script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
        
         <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
 
-
+<script src="jquery-3.1.1.min.js"></script>
     <!-- Custom styles for this template -->
     <link href="css/signin.css" rel="stylesheet">
 
