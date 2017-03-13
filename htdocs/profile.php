@@ -173,7 +173,7 @@ function getStates(value) {
 
     <div class="container" id="sn">
 
-      <div class="jumbotron col-md-3" style="padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:30px;width:auto" data-spy="affix">
+      <div class="jumbotron col-md-3" style="padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:30px;width:auto">
    <script>
 $(document).ready(function() {
     $("#add").click(function(){ //Trigger on form submit
@@ -249,6 +249,7 @@ $(document).ready(function() {
   $name = $row['name'];
   $sex= $row['sex'];
   $location = $row['location'];
+  $education = $row['education'];
   $join = date('d / m / Y', strtotime($row['date_joined']));
   $dob = $row['dob'];
   $email = $row['email'];
@@ -344,6 +345,7 @@ $(document).ready(function() {
         <p>Gender <?php echo $sex; ?></p>
         <p>Joined <?php echo $join; ?></p>
         <p>Age <?php echo $age; ?></p>
+        <p>Studies at <?php echo $education; ?></p>
      
       </div>
       
@@ -380,7 +382,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
      
 </script>    
     
-      <div class="jumbotron col-md-6 col-md-offset-3 activejumbo feed" id="fphotos" style="background-color: white;">
+      <div class="jumbotron col-md-6 activejumbo feed" id="fphotos" style="background-color: white;">
 
       <!--My Ajax buttons (photos)-->
       <script type="text/javascript">
@@ -561,7 +563,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       </div> <!--End of photo stuff-->
       
       
-       <div class="jumbotron col-md-6 col-md-offset-3 feed" id="fblog">
+       <div class="jumbotron col-md-6  feed" id="fblog">
        Blog Posts:
        
        
@@ -624,7 +626,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       </div>
       
       
-       <div class="jumbotron col-md-6 col-md-offset-3 feed" id="fcircles">
+       <div class="jumbotron col-md-6 feed" id="fcircles">
         Circles
         <?php
         $r = mysqli_query($dbc,"SELECT * FROM circles WHERE id IN ( SELECT circleID from circlemembership where userID = '".$loadprofile."')");
@@ -654,7 +656,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   
   $reclist = array();
     $checklist = array();
-    $mq = mysqli_query($dbc,"SELECT id FROM Users WHERE location = '".$location."' AND id != '".$_SESSION['id']."'");
+    $mq = mysqli_query($dbc,"SELECT id FROM Users WHERE (location = '".$location."' OR education = '".$education."') AND id != '".$_SESSION['id']."'");
     $x  = mysqli_query($dbc,"SELECT * FROM Relationships WHERE (user_1 = '".$loadprofile."' OR user_2 = '".$loadprofile."')");
      while($rowcheck = mysqli_fetch_array($x,MYSQLI_ASSOC)){
       if($rowcheck["user_1"] == $loadprofile){

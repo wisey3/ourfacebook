@@ -5,8 +5,8 @@ require_once('db_connect.php');
   session_start();
   
 if(isset($_SESSION['id'])){
-$sql = "SELECT * FROM Users WHERE id = '".$_SESSION['id']."'";
-$res = mysqli_query($dbc,$sql);
+
+$res = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$_SESSION['id']."'");
 
 $xml = new XMLWriter();
 

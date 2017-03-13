@@ -43,6 +43,7 @@ session_destroy();
       </form>
       
        <div class="register"><p>Don't have an account?</p> <button class="btn btn-success btn-block" data-toggle="modal" data-target="#signup" type="submit">Sign up</button></div>
+       <div class="import"><p>Had an account before?</p> <button class="btn btn-info btn-block" data-toggle="modal" data-target="#import" type="submit">Import your XML profile</button></div>
 
     </div> <!-- /container -->
     </section>
@@ -100,7 +101,12 @@ session_destroy();
                         </div> 
                         </div>
                           <div class="form-group">
-                            
+                             <div class="col-sm-12">
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="fa fa-university"></span></span>
+                                <input id="education" name="education" data-validation="length" data-validation-length="3" class="form-control required" type="text" size="5" placeholder="Current Education" required/>
+                            </div>
+                        </div>  
                     </div>
                           <div class="form-group">
                             <div class="col-sm-12">

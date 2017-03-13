@@ -31,9 +31,9 @@ if (!empty($errors)) { //If errors in validation
 	else{
 	$hashpass =  password_hash($_POST['password'], PASSWORD_DEFAULT);
 $q = "INSERT INTO Users
-	(name,sex,dob,location,date_joined,email,password)
+	(name,sex,dob,location,education,date_joined,email,password)
 	VALUES (
-	'".mysqli_real_escape_string($dbc,$_POST['name'])."','{$_POST['sex']}','".date('Y-m-d', strtotime($newdate))."','".mysqli_real_escape_string($dbc,$_POST['location'])."',NOW(),'{$_POST['email']}','".$hashpass."')";
+	'".mysqli_real_escape_string($dbc,$_POST['name'])."','{$_POST['sex']}','".date('Y-m-d', strtotime($newdate))."','".mysqli_real_escape_string($dbc,$_POST['location'])."','".mysqli_real_escape_string($dbc,$_POST['education'])."',NOW(),'{$_POST['email']}','".$hashpass."')";
 	
 	$r = mysqli_query($dbc,$q);
 	
