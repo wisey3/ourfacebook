@@ -570,6 +570,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
        
        <!--Put blog stuff here-->
 
+
         <?php 
        $user_id = $loadprofile;
   $query = "SELECT * FROM posts WHERE user_id='".$user_id."' ORDER BY id DESC";
@@ -577,27 +578,60 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   echo $posts->num_rows;
 ?>
        
-    <div class="containter">
+    <div class="containter ">
       <header>
         <?php if($_SESSION['id'] == $loadprofile){?>
         <h1>My Blog</h1>
         <?php } ?>
       </header>
-      <div class = "row" id="posts">
+      <div class = "row" id="posts " class="myblog">
         <ul>
           <?php while($row = mysqli_fetch_array($posts,MYSQLI_ASSOC)) : ?>
-            <li class="post">
+            <li id="post<?php echo $row['id']?>" class="post">
               <span><?php echo $row['title'] ?></span>
               <span><?php echo $row['date'] ?></span>
               <?php echo $row['content'] ?>
+              <?php echo $row['id']?>
             </li>
 <?php if($_SESSION['id'] == $loadprofile){?>
-            <form method="post" action="delete_entry.php">
-             <input type="hidden" name="post_id" value="<?php echo $row['id']?>" />
-          <input id="show-btn" type="submit" name="submit" value="Delete"/>
+
+
+            <form  id="delete-entry-<?php echo $row['id']?>">
+             <input  name="post_id" value="<?php echo $row['id']?>" />
+         <!--- <input id="show-btn" type="submit" name="submit" value="Delete"/> -->
         </form>
+       
+
+
+<button id="deletepost-<?php echo $row['id']?>" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
+          <script>
+          console.log("hey i exist");
+            var $btn = $('#deletepost-<?php echo $row["id"]?>');
+            $btn.on('click', function(e) { 
+              console.log("hey i try");
+            $.ajax({
+              type: "POST",
+              url: "delete_entry.php",
+              
+              data: $('#delete-entry-<?php echo $row["id"]?>').serialize(),
+
+              success: function(data) {
+                console.log("hey i work");
+                            
+    $("#fblog").load(location.href+" #fblog>*","").addClass("activejumbo");
+
+
+                                }
+                            // serializes the form's elements.
+        });
+    e.preventDefault();// avoid to execute the actual submit of the form.
+});
+</script>
+
       <?php } ?>
           <?php endwhile; ?>
+
+
         </ul>
       </div>
       
@@ -610,14 +644,9 @@ $("#sn").find("#fcircles").addClass("activejumbo");
           <div class="error"><?php echo $_GET['error']; ?></div>
         <?php endif; ?>
         <!-- make a post form and submit it to process.php -->
-        <form method="post" action="post_entry.php">
-          <input type="text" id="title" name="title" placeholder="Title"/>
-          <!-- <input type="text" id="content" name="content" placeholder="Enter Content"/> -->
 
-          <textarea rows="5" cols="50" id="content" name="content" placeholder="Enter Content"></textarea>
-<input type="hidden" id="user_id" name="user_id" value="<?php echo $_SESSION['id']?>"/>
-          <input id="show-btn" type="submit" name="submit" value="Post"/>
-        </form>
+    <a href="#" data-toggle="modal" data-target="#addNewPost" ><button>Add New Post</button></a>
+        
 
   
       </div>
@@ -626,6 +655,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
        
       </div>
       
+      
+
       
        <div class="jumbotron col-md-6 feed" id="fcircles">
         Circles
