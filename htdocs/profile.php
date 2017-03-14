@@ -677,7 +677,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   
   
   
-  if($t->num_rows >0||sizeof($publist)||($loadprofile == $_SESSION['id'] && $u->num_rows >0)){
+  if($t->num_rows >0||($loadprofile == $_SESSION['id'] &&sizeof($publist)>0)||($loadprofile == $_SESSION['id'] && $u->num_rows >0)){
+  
    ?>
     
       <div class="jumbotron col-md-3" style="padding:10px 20px;width:198px;margin-left:35px" id="friends">
@@ -721,7 +722,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
  ?> 
     
       <h4>Friends  <span style="font-weight:200"> <?php if(isset($mutual)){if($mutual>0){ if($loadprofile != $_SESSION['id']){
-      echo "($mutual mutual";  if($mutual>1){echo "friends)";}else{echo " friend)";}}}}?></span></h4>
+      echo '<br>';
+      echo "($mutual mutual";  if($mutual>1){echo " friends)";}else{echo " friend)";}}}}?></span></h4>
       <?php
   
      while($row3 = mysqli_fetch_array($t,MYSQLI_ASSOC)){
