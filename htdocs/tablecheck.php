@@ -8,6 +8,7 @@ if((mysqli_query($dbc,"SELECT * FROM album"))==FALSE){
 	albumID INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 	albumName TEXT NOT NULL,
 	userID INT(6),
+	viewStatus TEXT NOT NULL,
 	date DATETIME
 	)";
 

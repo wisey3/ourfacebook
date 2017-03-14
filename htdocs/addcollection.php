@@ -10,8 +10,22 @@ if(isset($_POST['content_txt'])&&isset($_POST['user'])){
 	// echo 'to be '.$name;
 	$user = $_POST['user'];
 
+	//visability can be E=everyone, F=Friends, FOF=Friends of Friends, C=any particular circle
+	if(isset($_POST['vis'])){
+		$visability = $_POST['vis'];
+		// if($visability=='C'){
+		// 	$visability=$_POST['circle_name'];
+		// }
+	}
+	else{
+		$visability = 'E';
+	}
+
+	// echo "<p> the visability chosen is ".$_POST['vis']." and the circle is ".$_POST['circle_name']."</p>";
+	
+
 	//INSERTING THE VALUES
-	$sql = "INSERT INTO album VALUES(DEFAULT,'$name','$user',CURRENT_TIMESTAMP)"; //try and work out how to add auto_increment and current_timestamp.
+	$sql = "INSERT INTO album VALUES(DEFAULT,'$name','$user','$visability',CURRENT_TIMESTAMP)"; //need to add the visability
 	$result = $dbc->query($sql);
 
 	$quer = "SELECT * FROM album WHERE albumName = '$name'";
