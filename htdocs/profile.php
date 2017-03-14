@@ -598,31 +598,77 @@ $("#sn").find("#fcircles").addClass("activejumbo");
               <span><?php echo $row['date'] ?></span>
               <?php echo $row['content'] ?>
               <?php echo $row['id']?>
-            </li>
+
+
 <?php if($_SESSION['id'] == $loadprofile){?>
 
 
             <form  id="delete-entry-<?php echo $row['id']?>">
-             <input  name="post_id" value="<?php echo $row['id']?>" />
+             <input  name="post_id" type="hidden" value="<?php echo $row['id']?>" />
          <!--- <input id="show-btn" type="submit" name="submit" value="Delete"/> -->
         </form>
        
 
 
-<button id="deletepost-<?php echo $row['id']?>" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
+<button id="deletepost-<?php echo $row['id']?>" class="delete-post" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
+
+<script>
+
+  var $btn = $('#deletepost-<?php echo $row["id"]?>');
+  console.log(
+      'i am here'
+    );
+  $btn.on("click" , function (e) {
+    // alert('trying to delete image');
+    //count++;
+    console.log(
+      'i am here too'
+    );
+     //to stop the rabbit hole multi send loop thing
+
+      var $myData = $('#delete-entry-<?php echo $row["id"]?>').serialize();
+
+      $(this).closest('li').remove();
+
+      $.ajax({
+            type: "POST", // HTTP method POST or GET
+            url: "delete_entry.php", //Where to make Ajax calls
+            data: $myData,
+            success:function(data){         
+             
+              
+            },        
+            error:function (xhr, ajaxOptions, thrownError){
+                alert('oh bollocks');
+            }
+          });
+    
+  });
+
+
+
+</script>
+
+
+<!---
           <script>
           console.log("hey i exist");
-            var $btn = $('#deletepost-<?php echo $row["id"]?>');
-            $btn.on('click', function(e) { 
+
+            var $btn = $('#deletepost-<?php //echo $row["id"]?>');
+            $(this).closest('li').remove();
+            $('body').on('click', $btn, function(e) { 
+              count++;
               console.log("hey i try");
+              if (count ==1) {
             $.ajax({
               type: "POST",
               url: "delete_entry.php",
               
-              data: $('#delete-entry-<?php echo $row["id"]?>').serialize(),
+              data: $('#delete-entry-<?php //echo $row["id"]?>').serialize(),
 
               success: function(data) {
                 console.log("hey i work");
+                count=0;
                             
     $("#fblog").load(location.href+" #fblog>*","").addClass("activejumbo");
 
@@ -630,12 +676,17 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                                 }
                             // serializes the form's elements.
         });
+          }
     e.preventDefault();// avoid to execute the actual submit of the form.
 });
-</script>
+</script> -->
 
       <?php } ?>
           <?php endwhile; ?>
+
+
+
+            </li>
 
 
         </ul>
