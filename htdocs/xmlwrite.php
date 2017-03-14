@@ -22,6 +22,7 @@ while ($row = mysqli_fetch_array($res,MYSQLI_ASSOC)) {
   $xml->writeElement("sex",$row['sex']);
   $xml->writeElement("dob",$row['dob']);
   $xml->writeElement("location",$row['location']);
+  $xml->writeElement("education",$row['education']);
   $xml->writeElement("date_joined",$row['date_joined']);
   $xml->writeElement("email",$row['email']);
   $xml->writeElement("password",$row['password']);

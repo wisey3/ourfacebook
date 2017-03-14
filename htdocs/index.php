@@ -161,8 +161,8 @@ session_destroy();
     
            success: function(data) {
                             if (!data.success) { //If fails
-                                if (data.errors.name) { //Returned if any error from process.php
-                                    $('.payment-errors').fadeIn(1000).html(data.errors.name); //Throw relevant error
+                                if (data.errors.email) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.email); //Throw relevant error
                                 }
                                 else if (data.errors.password) { //Returned if any error from process.php
                                     $('.payment-errors').fadeIn(1000).html(data.errors.password); //Throw relevant error
@@ -193,7 +193,95 @@ session_destroy();
         </div>
     </div>
 </div>
-    
+    <div class="modal fade" id="import">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+            Import an XML of your formerly deleted account to reactivate.
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form id="importform" method="POST" class="form-horizontal" role="form">
+                
+                         <div class="form-group">
+                            <div class="col-xs-12">
+                         
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-upload"></i></span>
+       
+                                <input id = "file" class = "form-control" type="file" name="profile" accept=".xml">
+                </div>
+                      
+                        </div>
+                        </div>                   
+                    
+                    <h3 id="imerrormessage" style="color:red" class="import-errors text-center"></h3>
+          
+                
+                </form>
+
+            <div class="modal-footer">
+            
+                <button id="importsubmit" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group"
+                
+                >
+                   Import
+                </button>
+                
+                       <script>
+          var $btn = $('#importsubmit');
+       $btn.on('click', function(e) {   
+       //$btn.prop('disabled', true);
+//$btn.button('progress');
+  var formData = new FormData();
+formData.append('file', $('#file')[0].files[0]);
+    $.ajax({
+           type: "POST",
+           url: "xmlread.php",
+           data: formData, 
+    		cache: false,
+        	contentType: false,
+        	processData: false,
+           success: function(data) {
+           console.log(data);
+                            if (!data.success) { //If fails
+                                if (data.errors.email) { //Returned if any error from process.php
+                                    $('.import-errors').fadeIn(1000).html(data.errors.email); //Throw relevant error
+                                }
+                                else if (data.errors.password) { //Returned if any error from process.php
+                                    $('.import-errors').fadeIn(1000).html(data.errors.password); //Throw relevant error
+                                }
+                                else if (data.errors.repeat) { //Returned if any error from process.php
+                                    $('.import-errors').fadeIn(1000).html(data.errors.repeat); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.import-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
+                $('#import').modal('hide');
+            }, 350);
+                                }
+                                 setTimeout(function() {
+                     $('.import-errors').empty();
+            }, 350);
+           
+                            }
+                            
+      
+        });
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+});
+
+
+</script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
          <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
   </body>
