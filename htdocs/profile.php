@@ -47,26 +47,55 @@ else{
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="refresh" content="500">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="../../favicon.ico">
-
     <title>Social Network</title>
-
-
+    <script src="jquery-3.1.1.min.js"></script>
+    <link rel="icon" href="../../favicon.ico">
     <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
+    <link href="css/chatstyle.css" rel="stylesheet">
     <link rel="stylesheet" href="css/buttons.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
- <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
-             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-
-    <!--style sheet for the photos etc-->
+        <!--style sheet for the photos etc-->
     <link rel="stylesheet" href="css/photoStyle.css">
-
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script> -->
   </head>
 
   <body>
+    <script> 
+  var stillAlive = window.setInterval(function () {
+    
+    $.get("online.php");
+  }, 6000);
+  </script>
 
+  <link type="text/css" rel="stylesheet" media="all" href="css/chat.css" />
+
+  <div class="chat_box">
+    <div class="chat_head"> Friends</div>
+    <div class="chat_body"> 
+  <?php 
+  $friendQuery = mysqli_query($dbc,"SELECT name, id , lastActive FROM Users WHERE id IN ( SELECT user_2 from Relationships where user_1 = '".$_SESSION['id']."' AND status= 'accepted' UNION SELECT user_1 from Relationships where user_2 = '".$_SESSION['id']."' AND status= 'accepted') ORDER BY -lastActive");
+  while($row_data = mysqli_fetch_array($friendQuery,MYSQLI_ASSOC))
+    {
+      $name = $row_data['name'];
+      $id = $row_data['id'];
+      $lastActive = $row_data['lastActive'];
+      if(strtotime($lastActive) > strtotime("-10 minutes")) {
+        echo "<div class='user'><a href='javascript:void(0)' onclick='javascript:chatWith($id)'><span>$name</span></a></div>";
+      }
+      else{
+        echo "<div class='userOffline'><a href='javascript:void(0)' onclick='javascript:chatWith($id)'><span>$name</span></a></div>";
+      } 
+    }
+  ?>
+    </div>
+  </div>
+
+<script type="text/javascript" src="js/chat.js"></script> 
+<script type="text/javascript" src="js/friendlistboxscript.js"></script> 
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <div class="navbar-header">
@@ -90,7 +119,7 @@ else{
               <li class="dropdown-header">Profile</li>
                 <li><a href="#" data-toggle="modal" data-target="#editinfo" >Edit Profile</a></li>
                 <li><a href="#" data-toggle="modal" data-target="#changepassword">Change Password</a></li>
-                
+                <li><a href="xmlwrite.php" >Export all profile to XML</a></li>
                 <li><a href="#" data-toggle="modal" data-target="#delete">Delete Account</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Privacy</li>
@@ -145,12 +174,7 @@ function getStates(value) {
 
     <div class="container" id="sn">
 
-<<<<<<< Updated upstream
       <div class="jumbotron col-md-3" style="padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:30px;width:auto">
-=======
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron col-md-3" style="padding:10px 20px;">
->>>>>>> Stashed changes
    <script>
 $(document).ready(function() {
     $("#add").click(function(){ //Trigger on form submit
@@ -221,41 +245,6 @@ $(document).ready(function() {
 });
 
  </script>    
-
- <?php 
-
- function findMutual(&$smaller,&$bigger,&$dbc){
-  $arrs = array();
-  $arrb = array();
-  $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
-  $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
-  while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
-    if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
-      if($rowsm["user_1"] != $smaller){      
-        array_push($arrs,$rowsm["user_1"]);
-      }
-      else{
-        array_push($arrs,$rowsm["user_2"]);
-      }
-    }
-  }
-  while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
-    if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
-      if($rowbi["user_1"] != $bigger){      
-        array_push($arrb,$rowbi["user_1"]);
-      }
-      else{
-        array_push($arrb,$rowbi["user_2"]);
-      }
-    }
-  }
-  
-  $mfriends = array_intersect($arrb,$arrs);
-  $mutual = sizeof($mfriends);
-
-  return $mutual;
- }
- ?>
       <?php
 
     $r = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$loadprofile."'");
@@ -308,20 +297,45 @@ $(document).ready(function() {
       }   
        ?>
         
-
         
         <?php 
-
-        $mutual = findMutual($smaller,$bigger,$dbc);
+        $arrs = array();
+        $arrb = array();
+        $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
+        $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
+         while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
+         if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
+      if($rowsm["user_1"] != $smaller){
+      
+        array_push($arrs,$rowsm["user_1"]);
+      }
+      else{
+        array_push($arrs,$rowsm["user_2"]);
+        }
+      }
+     }
+    while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
+         if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
+      if($rowbi["user_1"] != $bigger){
+      
+        array_push($arrb,$rowbi["user_1"]);
+      }
+      else{
+        array_push($arrb,$rowbi["user_2"]);
+        }
+      }
+     }
+     $mfriends = array_intersect($arrb,$arrs);
+    $mutual = sizeof($mfriends);
         }
         if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0))){
-          echo "<h3>$name</h3>";
-          if($status=="pending"){
-            echo"<p>If $name accepts your friend request, you will be able to see their full profile.</p>";
-          }
-          else{
-            echo "<p>Add $name as a friend to view full profile.</p>";
-          }
+         echo "<h3>$name</h3>";
+         if($status=="pending"){
+         echo"<p>If $name accepts your friend request, you will be able to see their full profile.</p>";
+         }
+        else{
+        echo "<p>Add $name as a friend to view full profile.</p>";
+        }
         }
         else{
        
@@ -373,16 +387,9 @@ $('#feedmenu').find("#c").addClass("active");
 $("#sn").find("#fcircles").addClass("activejumbo");
 });
      
-</script>  
+</script>    
     
       <div class="jumbotron col-md-6 activejumbo feed" id="fphotos" style="background-color: white;">
-<<<<<<< Updated upstream
-=======
-
-      <!--function for checking visability-->
-      <script type="text/javascript">
-      </script>
->>>>>>> Stashed changes
 
       <!--My Ajax buttons (photos)-->
       <script type="text/javascript">
@@ -411,15 +418,13 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                   return false;
               }
 
-              // alert($('#visability').val());
-
-              var myData = 'user='+<?php echo $_SESSION['id']?>+'&content_txt='+$("#addText").val()+'&circle_name='+$("#chooseCircle").val()+'&vis='+$('#visability').val();
+              var myData = 'user='+<?php echo $_SESSION['id']?>+'&content_txt='+$("#addText").val();
 
               $.ajax({
                 type: "POST", // HTTP method POST or GET
                 url: "addCollection.php", //Where to make Ajax calls
                 dataType:"text", // Data type, HTML, json etc.
-                data:myData, //$('#formID').serialize()
+                data:myData,
                 success:function(response){
                     $("#tableCol").append(response); //responds -> <ul>
                     $("#addText").val(''); //empty text field on successful
@@ -449,7 +454,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                   data:myData,
                   dataType: "text",
                   success:function(data){         
-                    // alert('Collection Deleted');
+                    alert('Collection Deleted');
                     count = 0;
                   },        
                   error:function (xhr, ajaxOptions, thrownError){
@@ -468,63 +473,6 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 
    
         <div id="collectionBox" class="collectionInsert" >
-        <?php
-        function viewCheck(&$user, &$albumID,&$dbc){ //put this out of this bit somewhere so that collection.php can use it
-          $query = "SELECT * FROM album WHERE albumID = '".$albumID."'";
-          $result = mysqli_query($dbc,$query);
-          $album = mysqli_fetch_array($result);
-
-          $vis = $album['viewStatus'];
-          $owner = $album['userID'];
-
-          if($user<$owner){
-            $smol = $user;
-            $big = $owner;
-          }
-          else{
-            $smol = $owner;
-            $big = $user;
-          }
-
-          if($user==$owner){
-            return true;
-          }
-          else if($vis=='E'){ //everyone
-            return true;
-          }
-          else if($vis=='F'){ //friends       
-            $query = "SELECT * FROM Relationships WHERE user_1 = '$smol' AND user_2 = '$big'"; //if they're friends then it should return true
-            $result = mysqli_query($dbc,$query);
-
-            if($result->num_rows == 0){
-              return false;
-            }
-            // return true;
-          }
-          else if($vis=='FOF'){ //friends of friends
-            if(findMutual($smol,$big,$dbc)==0){
-              echo 'returning false';
-              return false;
-            }
-            // return true;
-          }
-          else{ //particular circles
-            $query = "SELECT * FROM circlemembership WHERE circleID = (SELECT circleID FROM circles WHERE name = '$vis')";
-            $result = mysqli_query($dbc,$query);
-
-            while($row=mysqli_fetch_array($result)){ //returns a list of all people belonging to that circle
-
-              $member = $row['userID'];
-
-              if($member == $user){
-                return true;
-              }
-            }
-            return false;
-          }
-          return true;
-        }
-        ?>
         <h2><strong>Collections</strong></h2>
           
           <div id="collectionGrid" >
@@ -551,31 +499,28 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                 $name = $album['albumName'];
                 $albumId = $album['albumID'];
 
-                if(viewCheck($user,$albumId,$dbc)){//{session['id']fits with the album visability
-                  echo "<td>";
-                  //whole box
-                  echo "<div style='position:relative;'>"; 
-                  //delete button
-                  if($owner==$user){
-                    echo "<a class='deleteCol' id='".$albumId."'>";
-                      echo "<div id='deleteX'>";
-                        //image
-                        echo "<img src='icons/close.png' height='30px' />";
-                      echo "</div>";
-                    echo "</a>";
-                  }
-                    //main button
-                    echo "<a class='view' id='".$albumId."'>";
-                      echo "<div id='colSquare'>";
-                        echo "<p id='colName'>".$name."</p>";
-                      echo "</div>";
-                    echo "</a>";
-                  echo "</div>";
-                  echo "</td>";
+                echo "<td>";
+                //whole box
+                echo "<div style='position:relative;'>"; 
+                //delete button
+                if($owner==$user){
+                  echo "<a class='deleteCol' id='".$albumId."'>";
+                    echo "<div id='deleteX'>";
+                      //image
+                      echo "<img src='icons/close.png' height='30px' />";
+                    echo "</div>";
+                  echo "</a>";
+                }
+                  //main button
+                  echo "<a class='view' id='".$albumId."'>";
+                    echo "<div id='colSquare'>";
+                      echo "<p id='colName'>".$name."</p>";
+                    echo "</div>";
+                  echo "</a>";
+                echo "</div>";
+                echo "</td>";
 
-                  $i++;
-                }               
-                
+                $i++;
             }
             
             if($i==3){
@@ -614,7 +559,6 @@ $("#sn").find("#fcircles").addClass("activejumbo");
               echo "</tr>";
               echo "</table>";
             }
-
             
           ?>
             </div>
@@ -626,11 +570,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       </div> <!--End of photo stuff-->
       
       
-<<<<<<< Updated upstream
        <div class="jumbotron col-md-6  feed" id="fblog">
-=======
-       <div class="jumbotron col-md-6 feed" id="fblog">
->>>>>>> Stashed changes
        Blog Posts:
        
        
@@ -773,11 +713,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       </div>
       
       
-<<<<<<< Updated upstream
 
       
-=======
->>>>>>> Stashed changes
        <div class="jumbotron col-md-6 feed" id="fcircles">
         Circles
         <?php
@@ -832,7 +769,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   
    ?>
     
-      <div class="jumbotron col-md-3" style="padding:10px 20px;" id="friends">
+      <div class="jumbotron col-md-3" style="padding:10px 20px;width:198px;margin-left:35px" id="friends">
       <?php if( $loadprofile == $_SESSION['id']){
       if($u->num_rows >0){
       echo "<h4>Pending Friend Requests</h4>";
@@ -935,27 +872,6 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       <div class="modal-body" style="position: relative; left:27%;">
         <input name="content_txt" type="text" id="addText" cols="45" rows="1" placeholder="Enter collection name">
         <button id="addCollection" type="button" class="addItem" data-dismiss="modal">Add</button><!--class="btn btn-default"-->
-        <select class="form-control" id ="visability" style="width:100px;" required>
-          <option value="E">Everybody</option>
-          <option value ="F">Friends</option>
-          <option value="FOF">Friends of Friends</option>
-          <?php        
-
-            $quer = "SELECT * FROM circles WHERE id = (SELECT circleID FROM circleMembership WHERE userID = '".$_SESSION['id']."')"; //this will return all circles in which user is a member.  
-            $circles = mysqli_query($dbc,$quer);    
-
-            while ($view = mysqli_fetch_array($circles)) {
-              $circleName = $view['name'];
-              
-              echo "<option value='$circleName'";
-              // if($vis==$circleName){echo 'selected';}
-              echo ">".$circleName."</option>";
-            }
-          ?>
-        </select>
-        <!-- if circle is chosen then a second text box appears in which you can type the circle name -->
-        <!-- <input name="circle_name" type="text" id="chooseCircle" cols="45" rows="1" placeholder="e.g. Football Team" required> -->
-        
       </div>
     </div>
     
@@ -1170,7 +1086,8 @@ $("#sn").find("#fcircles").addClass("activejumbo");
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header text-center">
-            NOTE: Deleting your account is irreversible!
+            NOTE: Deleting your account is irreversible without saving an XML of your data!
+            Please download an XML of your data to import in the future.
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
