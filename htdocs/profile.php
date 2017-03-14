@@ -196,17 +196,19 @@ $(document).ready(function() {
 });
 $(document).ready(function() {
     $(".accept").click(function(){ //Trigger on form submit
+    
         var user1 =  <?php echo $_SESSION['id'];?>;
         var friend1 =  $( this ).val();
         var action1 = 'accept';
-
+ $(this).closest(".btn-group-xs").remove();
         $.ajax({ //Process the form using $.ajax()
             type      : 'POST', //Method type
             url       : 'addfriend.php', //Your form processing file URL
             data      : {user: user1, friend: friend1, action: action1}, //Forms name
      
             success   : function(data) {
-           $("#friends").load(location.href+" #friends>*","");
+              
+         
                             }
         });
         event.preventDefault(); //Prevent the default submit
@@ -214,17 +216,18 @@ $(document).ready(function() {
 });
 $(document).ready(function() {
     $(".decline").click(function(){ //Trigger on form submit
+    
         var user1 =  <?php echo $_SESSION['id'];?>;
         var friend1 =  $( this ).val();
         var action1 = 'decline';
-
+ $(this).closest(".btn-group-xs").remove(); 
         $.ajax({ //Process the form using $.ajax()
             type      : 'POST', //Method type
             url       : 'addfriend.php', //Your form processing file URL
             data      : {user: user1, friend: friend1, action: action1}, //Forms name
      
             success   : function(data) {
-       $("#friends").load(location.href+" #friends>*","");            
+         
       }
         });
         event.preventDefault(); //Prevent the default submit
