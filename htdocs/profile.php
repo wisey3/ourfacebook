@@ -350,6 +350,9 @@ $(document).ready(function() {
         <p>Joined <?php echo $join; ?></p>
         <p>Age <?php echo $age; ?></p>
         <p>Studies at <?php echo $education; ?></p>
+        <?php if($_SESSION['id'] != $loadprofile){?>
+        <p><a href="#" data-toggle="modal" data-target="#addTocircle" >Add to Circle</a></p>
+        <?php } ?>
      
       </div>
       
