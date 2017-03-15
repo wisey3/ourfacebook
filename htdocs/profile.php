@@ -806,23 +806,29 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       
 
       
+       <script>
+      function setURL(url){
+          document.getElementById('iframe').src = url;
+      }
+      </script>
+
+
        <div class="jumbotron col-md-6 feed" id="fcircles">
-        Circles
+        <h2><strong>Circles</strong></h2>
         <?php
+        if($_SESSION['id'] == $loadprofile){
+        echo "<p><a href='#' data-toggle='modal' data-target='#leavecircle' >Leave Circle</a></p>";
+        }
         $r = mysqli_query($dbc,"SELECT * FROM circles WHERE id IN ( SELECT circleID from circlemembership where userID = '".$loadprofile."')");
         while($row_data = mysqli_fetch_array($r,MYSQLI_ASSOC))
         {
          $circleid = $row_data['id'];
          $name = $row_data['name'];
-          echo "<a href='circles/$circleid'><div class='circle'>$name</div></a>";        
+         echo "<a href='#' onclick=\"setURL('circles/?name=$circleid')\"><div class='circle'>$name</div></a>";     
         }
        ?>
        
-       
-         <!--Put circles stuff here-->
-       
-       
-       
+       <iframe id='iframe' src="" style="width: 100%; height: 650px" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0">$name</iframe>
       </div>
       
       
@@ -1393,6 +1399,71 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                                     $('.payment-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
                 setTimeout(function() {
                 $('#addTocircle').modal('hide');
+            }, 350);
+                                }
+                            }
+        });
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+});
+</script>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="leavecircle">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+            Leave Circle
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+      <div class="modal-body">
+        <form id="leaveCircleform" method="POST" class="form-horizontal" role="form">
+          <div class="form-group">
+            <div class="col-sm-12">
+              <div class="input-group">
+                <span class="input-group-addon"><span class="fa fa-circle-o"></span></span>   
+                <select class="form-control" id="circleselect" name ="circleselect" required>
+                <?php
+
+                  $r = mysqli_query($dbc,"SELECT * FROM circles WHERE id IN ( SELECT circleID from circlemembership where userID = '".$_SESSION['id']."')");
+                  while($row_data = mysqli_fetch_array($r,MYSQLI_ASSOC))
+                  {
+                    $circleID = $row_data['id'];
+                    $circleName = $row_data['name'];
+                    echo "<option value=$circleID> $circleName </option>";      
+                  }
+                ?>
+                </select>
+              </div>           
+            </div>
+          </div>              
+          <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>      
+        </form>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.2.8/jquery.form-validator.min.js"></script>
+        <script>$.validate();</script>
+        <div class="modal-footer">
+          <button id="submitleaveCircle" type="button" class="btn btn-primary col-sm-12 col-xs-12 form-group" data-progress-text="<span class='glyphicon glyphicon-refresh fa-spin'></span>" data-success-text="<span class='glyphicon glyphicon-ok'></span>" >Save </button>
+          <script>
+
+            var $btn = $('#submitleaveCircle');
+            $btn.on('click', function(e) { 
+            $.ajax({
+              type: "POST",
+              url: "leaveCircle.php",
+              data: $("#leaveCircleform").serialize(), // serializes the form's elements.
+    
+           success: function(data) {
+                            if (!data.success) { //If fails
+                                if (data.errors.name) { //Returned if any error from process.php
+                                    $('.payment-errors').fadeIn(1000).html(data.errors.name); //Throw relevant error
+                                }
+                            }
+                            else {
+                                    $('.payment-errors').fadeIn(1000).append('<h3 style="color:green">' + data.posted + '</h3>'); //If successful, than throw a success message
+                setTimeout(function() {
+                $('#leavecircle').modal('hide');
             }, 350);
                                 }
                             }
