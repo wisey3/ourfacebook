@@ -244,7 +244,40 @@ $(document).ready(function() {
   });
 });
 
- </script>    
+ </script>   
+ <?php //function for finding whether two users have a mutual friend
+        function findMutual(&$smaller,&$bigger,&$dbc){
+        $arrs = array();
+        $arrb = array();
+        $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
+        $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
+        while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
+          if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
+            if($rowsm["user_1"] != $smaller){      
+              array_push($arrs,$rowsm["user_1"]);
+            }
+            else{
+              array_push($arrs,$rowsm["user_2"]);
+            }
+          }
+        }
+        while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
+          if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
+            if($rowbi["user_1"] != $bigger){      
+              array_push($arrb,$rowbi["user_1"]);
+            }
+            else{
+              array_push($arrb,$rowbi["user_2"]);
+            }
+          }
+        }
+
+        $mfriends = array_intersect($arrb,$arrs);
+        $mutual = sizeof($mfriends);
+
+        return $mutual;
+        }
+        ?> 
       <?php
 
     $r = mysqli_query($dbc,"SELECT * FROM Users WHERE id = '".$loadprofile."'");
@@ -299,34 +332,35 @@ $(document).ready(function() {
         
         
         <?php 
-        $arrs = array();
-        $arrb = array();
-        $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
-        $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
-         while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
-         if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
-      if($rowsm["user_1"] != $smaller){
+    //     $arrs = array();
+    //     $arrb = array();
+    //     $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
+    //     $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
+    //      while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
+    //      if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
+    //   if($rowsm["user_1"] != $smaller){
       
-        array_push($arrs,$rowsm["user_1"]);
-      }
-      else{
-        array_push($arrs,$rowsm["user_2"]);
-        }
-      }
-     }
-    while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
-         if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
-      if($rowbi["user_1"] != $bigger){
+    //     array_push($arrs,$rowsm["user_1"]);
+    //   }
+    //   else{
+    //     array_push($arrs,$rowsm["user_2"]);
+    //     }
+    //   }
+    //  }
+    // while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
+    //      if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
+    //   if($rowbi["user_1"] != $bigger){
       
-        array_push($arrb,$rowbi["user_1"]);
-      }
-      else{
-        array_push($arrb,$rowbi["user_2"]);
-        }
-      }
-     }
-     $mfriends = array_intersect($arrb,$arrs);
-    $mutual = sizeof($mfriends);
+    //     array_push($arrb,$rowbi["user_1"]);
+    //   }
+    //   else{
+    //     array_push($arrb,$rowbi["user_2"]);
+    //     }
+    //   }
+    //  }
+    //  $mfriends = array_intersect($arrb,$arrs);
+    // $mutual = sizeof($mfriends);
+        $mutual = findMutual($smaller,$bigger,$dbc);
         }
         if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0))){
          echo "<h3>$name</h3>";
@@ -473,6 +507,61 @@ $("#sn").find("#fcircles").addClass("activejumbo");
 
    
         <div id="collectionBox" class="collectionInsert" >
+         <?php //function allowing you to determine if you can the current albums that are available
+          function viewCheck(&$user, &$albumID,&$dbc){
+            $query = "SELECT * FROM album WHERE albumID = '".$albumID."'";
+            $result = mysqli_query($dbc,$query);
+            $album = mysqli_fetch_array($result);
+
+            $vis = $album['viewStatus'];
+            $owner = $album['userID'];
+
+            if($user<$owner){
+              $smol = $user;
+              $big = $owner;
+            }
+            else if($user==$owner){
+              return true;
+            }
+            else{
+              $smol = $owner;
+              $big = $user;
+            }
+
+            if($vis=='E'){ //everyone
+              return true;
+            }
+            else if($vis=='F'){ //friends       
+              $query = "SELECT * FROM Relationships WHERE user_1 = '$smol' AND user_2 = '$big'"; //if they're friends then it should return true
+              $result = mysqli_query($dbc,$query);
+
+              if($result->num_rows == 0){
+                return false;
+              }
+            }
+            else if($vis=='FOF'){ //friends of friends
+              if(findMutual($smol,$big,$dbc)==0){
+                echo 'returning false';
+                return false;
+              }
+            }
+            else{ //particular circles
+              $query = "SELECT * FROM circlemembership WHERE circleID = (SELECT circleID FROM circles WHERE name = '$vis')";
+              $result = mysqli_query($dbc,$query);
+
+              while($row=mysqli_fetch_array($result)){ //returns a list of all people belonging to that circle
+
+                $member = $row['userID'];
+
+                if($member == $user){
+                  return true;
+                }
+              }
+              return false;
+            }
+            return true;
+          }
+          ?>
         <h2><strong>Collections</strong></h2>
           
           <div id="collectionGrid" >
@@ -499,6 +588,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                 $name = $album['albumName'];
                 $albumId = $album['albumID'];
 
+                if(viewCheck($user,$albumId,$dbc)){
                 echo "<td>";
                 //whole box
                 echo "<div style='position:relative;'>"; 
@@ -521,6 +611,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                 echo "</td>";
 
                 $i++;
+              }
             }
             
             if($i==3){

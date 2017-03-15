@@ -56,7 +56,7 @@ function addPhoto(&$target_file,&$currentUser,&$currentAlbum,&$dbc){
 			    	echo "<img src='icons/close.png' style='height:30px; ' />";
 			    echo "</div>";
 		    echo "</a>";
-	    	//image button
+		    //image button
 	    	echo "<div id='imageSquare'>";
 
 		    list($width,$height) = getimagesize(''.$photoName.'');

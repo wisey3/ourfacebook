@@ -38,8 +38,8 @@ $albumId = $_POST['album'];
 
                 ?>                                 
         </div>
-        <div id="commentHolder" style="border:solid; border-color:lightgrey; background-color: white; position: relative; padding:10px;  width:540px; height:350px; top:-10px; left:-19px;">
-            <div id="commentScroll" style="overflow:scroll; position:absolute; text-align: left; height: 275px; width:520px;">
+        <div id="commentHolder" style="border:solid; border-color:lightgrey; background-color: white; position: relative; padding:10px;  width:540px; height:300px; top:-10px; left:-19px;"> <!---->
+            <div id="commentScroll" style="overflow:scroll; position:absolute; text-align: left; height: 225px; width:520px;"> <!---->
             <?php                     
 
                 $quer = "SELECT * FROM comment WHERE photoID = '".$photoId."'";
@@ -68,7 +68,7 @@ $albumId = $_POST['album'];
             <?php
 
                 echo '<div id="commentBox" style="position: absolute; bottom: 10px;">';
-                echo '<textarea name="content_txt" id="contentText" cols="57" rows="1" placeholder="Enter some text"></textarea>';
+                echo '<textarea name="content_txt" id="contentText" cols="57" rows="1" placeholder="Leave a comment..."></textarea>';
                 echo '<button style="position:absolute; right:-90px; " class="FormSubmit" id='.$photoId.'>Comment</button>';
                 echo '</div';
             ?>

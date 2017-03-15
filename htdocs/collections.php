@@ -114,6 +114,99 @@ $(document).ready(function() {
         
 
         <div id="hola" class="collectionInsert"> 
+        <?php
+        function findMutual(&$smaller,&$bigger,&$dbc){
+          $arrs = array();
+          $arrb = array();
+          $lists =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$smaller."' OR user_2 = '".$smaller."')  AND status = 'accepted')");
+          $listb =  mysqli_query($dbc,"SELECT * FROM Relationships WHERE ((user_1 = '".$bigger."' OR user_2 = '".$bigger."') AND status = 'accepted')");
+          while($rowsm = mysqli_fetch_array($lists,MYSQLI_ASSOC)){
+            if($rowsm["user_1"]!=$bigger || $rowsm["user_2"]!=$bigger){
+              if($rowsm["user_1"] != $smaller){      
+                array_push($arrs,$rowsm["user_1"]);
+              }
+              else{
+                array_push($arrs,$rowsm["user_2"]);
+              }
+            }
+          }
+          while($rowbi = mysqli_fetch_array($listb,MYSQLI_ASSOC)){
+            if($rowbi["user_1"]!=$smaller || $rowbi["user_2"]!=$smaller){
+              if($rowbi["user_1"] != $bigger){      
+                array_push($arrb,$rowbi["user_1"]);
+              }
+              else{
+                array_push($arrb,$rowbi["user_2"]);
+              }
+            }
+          }
+          
+          $mfriends = array_intersect($arrb,$arrs);
+          $mutual = sizeof($mfriends);
+
+          return $mutual;
+        }
+
+        function viewCheck(&$user, &$albumID,&$dbc){ //put this out of this bit somewhere so that collection.php can use it
+          $query = "SELECT * FROM album WHERE albumID = '".$albumID."'";
+          $result = mysqli_query($dbc,$query);
+          $album = mysqli_fetch_array($result);
+
+
+
+          $vis = $album['viewStatus'];
+          $owner = $album['userID'];
+
+          // echo $album['albumName'].' can be seen by '.$vis;
+
+          if($user<$owner){
+            $smol = $user;
+            $big = $owner;
+          }
+          else if($user==$owner){
+            return true;
+          }
+          else{
+            $smol = $owner;
+            $big = $user;
+          }
+
+          if($vis=='E'){ //everyone
+            return true;
+          }
+          else if($vis=='F'){ //friends       
+            $query = "SELECT * FROM Relationships WHERE user_1 = '$smol' AND user_2 = '$big'"; //if they're friends then it should return true
+            $result = mysqli_query($dbc,$query);
+
+            if($result->num_rows == 0){
+              return false;
+            }
+            // return true;
+          }
+          else if($vis=='FOF'){ //friends of friends
+            if(findMutual($smol,$big,$dbc)==0){
+              echo 'returning false';
+              return false;
+            }
+            // return true;
+          }
+          else{ //particular circles
+            $query = "SELECT * FROM circlemembership WHERE circleID = (SELECT circleID FROM circles WHERE name = '$vis')";
+            $result = mysqli_query($dbc,$query);
+
+            while($row=mysqli_fetch_array($result)){ //returns a list of all people belonging to that circle
+
+              $member = $row['userID'];
+
+              if($member == $user){
+                return true;
+              }
+            }
+            return false;
+          }
+          return true;
+        }
+        ?>
         <h2><strong>Collections</strong></h2>            
           
           <div id="collectionGrid">
@@ -132,14 +225,15 @@ $(document).ready(function() {
             echo "<tr>";
             while ($album = mysqli_fetch_array($albumNo)) {
 
-                if ($i == $maxcols) {
-                    $i = 0;
-                    echo "</tr><tr>";
-                }
+              if ($i == $maxcols) {
+                  $i = 0;
+                  echo "</tr><tr>";
+              }
 
-                $name = $album['albumName'];
-                $albumId = $album['albumID'];
+              $name = $album['albumName'];
+              $albumId = $album['albumID'];
 
+              if(viewCheck($user,$albumId,$dbc)){//{session['id']fits with the album visability
                 echo "<td>";
                 //whole box
                 echo "<div style='position:relative;'>"; 
@@ -148,7 +242,7 @@ $(document).ready(function() {
                   echo "<a class='deleteCol' id='".$albumId."'>";
                     echo "<div id='deleteX'>";
                       //image
-                      echo "<img src='icons/close.png' style='height:30px; ' />";
+                      echo "<img src='icons/close.png' height='30px' />";
                     echo "</div>";
                   echo "</a>";
                 }
@@ -162,6 +256,7 @@ $(document).ready(function() {
                 echo "</td>";
 
                 $i++;
+              }
             }
 
             //add collection pop-up
@@ -211,7 +306,7 @@ $(document).ready(function() {
         
         </div>
 
-        <!--Add Collection Modal-->
+      <!--Add Collection Modal-->
       <div class="modal fade" id="addCol" role="dialog">
         <div class="modal-dialog">
         
@@ -223,12 +318,21 @@ $(document).ready(function() {
             </div>
             <div class="modal-body" style="position: relative; left:27%;">
               <input name="content_txt" type="text" id="addText" cols="45" rows="1" placeholder="Enter collection name">
-              <button id="addCollection" class="btn btn-default" data-dismiss="modal">Add</button>
+              <button id="addCollection" type="button" class="addItem" data-dismiss="modal">Add</button><!--class="btn btn-default"-->
+              <select class="form-control" id ="visability" style="width:100px;" required>
+                <option value="E">Everybody</option>
+                <option value ="F">Friends</option>
+                <option value="FOF">Friends of Friends</option>
+                <option value ="C">Circle</option>
+              </select>
+              <input name="circle_name" type="text" id="chooseCircle" cols="45" rows="1" placeholder="e.g. Football Team" required>
+              
             </div>
           </div>
           
         </div>
       </div>
+      <!--End of Add Collection Modal-->
 
     
 </body>

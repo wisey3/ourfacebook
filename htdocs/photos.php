@@ -13,6 +13,7 @@ if(isset($_POST['user'])&&isset($_POST['albumId'])){
     $row = mysqli_fetch_array($album);
 	$name = $row['albumName'];
 	$owner = $row['userID'];
+	$vis = $row['viewStatus'];
 }
 else{
 	$user = 4;
@@ -75,7 +76,7 @@ $(document).ready(function() {
 		        data:myData,
 		        dataType: "text",
 		        success:function(data){        	
-		        	alert('Image Deleted');
+		        	// alert('Image Deleted');
 		        	count = 0;
 		        },        
 		        error:function (xhr, ajaxOptions, thrownError){
@@ -107,7 +108,7 @@ $(document).ready(function(){
 		if(count==1){/*to stop the rabbit hole multi send loop thing*/
 			var toWhere = $(this).attr('id');
 			if(toWhere=='toCollection'){
-				// alert('leaving photos');
+				alert('leaving photos');
 				var myData = 'user='+ <?php echo $user ?>+'&owner='+<?php echo $owner ?>+'&albumId='+<?php echo $albumNum ?>;
 				$.post("collections.php #hola",myData,function(data){
 					$("#collectionBox").html(data);
@@ -151,6 +152,34 @@ $(document).ready(function() {
 	                alert(thrownError);
 	            }
 	        });	
+
+		}		
+	});	            
+});
+$(document).ready(function() {
+	$("body").on("click","#hi .change",function (e) {
+		e.preventDefault();
+		count++;
+
+		if(count==1){ //to stop the rabbit hole multi send loop thing
+
+			var myData = 'viewStatus='+$('#vis').val()+'&albumId='+<?php echo $albumNum; ?>;
+
+	        $.ajax({
+	            type: "POST", // HTTP method POST or GET
+	            url: "changeView.php", //Where to make Ajax calls
+	            dataType:"text", // Data type, HTML, json etc.
+	            data:myData,
+	            success:function(data){
+	            	alert('Visibility changed!');
+	                count = 0;
+
+	            },
+	            error:function (xhr, ajaxOptions, thrownError){
+	                // $("#FormSubmit").show(); //show submit button
+	                alert(thrownError);
+	            }
+	        });
 		}		
 	});	            
 });
@@ -167,7 +196,41 @@ $(document).ready(function() {
 		<div id="hi">
 		<a class="backButton" id="toCollection"><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
       	<br>
-		<h2><strong>Collections ></strong> <i style="font-size: 25px;"><?php echo $name ?></i></h2>
+		<div>
+			<h2><strong>Collections ></strong> <i style="font-size: 25px;"><?php echo $name ?></i></h2>
+			<?php if($user==$owner){
+			 echo "<div>";
+				echo "<button id='changeVis' type='button' class='change' data-dismiss='modal'>Save</button>";
+		        echo "<select class='form-control' id ='vis' style='width:100px;' required>";
+					echo "<option value='E'";
+					  if($vis=='E'){
+					  	echo 'selected';}
+						  echo ">Everybody</option>";
+					echo "<option value ='F'";
+					  if($vis=='F'){
+					  	echo 'selected';}
+						  echo ">Friends</option>";
+					echo "<option value='FOF'";
+					if($vis=='FOF'){
+					  	echo 'selected';}
+					  echo ">Friends of Friends</option>";
+		          
+
+		          	$quer = "SELECT * FROM circles WHERE id = (SELECT circleID FROM circleMembership WHERE userID = '$user')"; //this will return all circles in which user is a member.  
+					$circles = mysqli_query($dbc,$quer);		
+
+					while ($view = mysqli_fetch_array($circles)) {
+						$circleName = $view['name'];
+						
+						echo "<option value='$circleName'";
+						if($vis==$circleName){echo 'selected';}
+						echo ">".$circleName."</option>";
+					}		          
+		        echo "</select>";
+	        echo "</div>";
+	    	}?>
+
+		</div>
 
 			<div id="collectionGrid" style=" width:500px;">
 				<div>
