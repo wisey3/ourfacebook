@@ -47,7 +47,7 @@ $albumId = $_POST['album'];
                 echo'<ul style="list-style-type: none; position:relative; left:-30px;" id="responds">';
 
                 while($row = mysqli_fetch_array($comments)){
-                    $albumId = $row['albumID'];
+                    //$albumId = $row['albumID'];
                     $user = $row['userID'];
 
                     $quer = "SELECT * FROM Users WHERE id = '".$user."'";

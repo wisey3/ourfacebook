@@ -22,7 +22,7 @@ if(isset($_POST["content_txt"]) && strlen($_POST["content_txt"])>0)
 	$time = date('H:i:s');
 	$date = date('Y-m-d',time());
 	
-	$insert_row = $dbc->query("INSERT INTO comment (photoID,userID,albumID,content,date) VALUES('$photoID','$user','$albumID','".$contentToSave."',CURRENT_TIMESTAMP)");
+	$insert_row = $dbc->query("INSERT INTO comment (photoID,content,date) VALUES('$photoID','".$contentToSave."',CURRENT_TIMESTAMP)");
 
 	$quer = "SELECT * FROM Users WHERE id = '".$user."'";
     $res = mysqli_query($dbc,$quer);

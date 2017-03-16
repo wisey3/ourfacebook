@@ -24,9 +24,7 @@ if($type=='Collection'){
 	$quer = "DELETE FROM album WHERE albumID = ".$album."";
 	$result = mysqli_query($dbc,$quer);
 
-	//delete photo comments in album
-	$quer = "DELETE FROM comment WHERE albumID = ".$album."";
-	$result = $dbc->query($quer);	
+	//No need to delete comments separately due to normalisation	
 
 	//delete photos in album
 	$quer = "DELETE FROM photo WHERE albumID = ".$album."";
@@ -48,7 +46,7 @@ else if($type=='Photo'){
 
 	$albumName = $album['albumName'];
 	$albumID = $album['albumID'];
-	$userID = $album['userID'];
+	//$userID = $album['userID'];
 
 	$quer = "DELETE FROM photo WHERE photoID = ".$photoID."";
 	$result = $dbc->query($quer);

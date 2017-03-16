@@ -25,7 +25,7 @@ if((mysqli_query($dbc,"SELECT * FROM photo"))==FALSE){
 	$sql = "CREATE TABLE photo (
 	photoID INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 	albumID INT(6),
-	userID INT(6),
+
 	refLec TEXT NOT NULL,
 	date DATETIME
 	)";
