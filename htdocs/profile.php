@@ -56,6 +56,7 @@ else{
     <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
     <link href="css/chatstyle.css" rel="stylesheet">
     <link rel="stylesheet" href="css/buttons.css">
+    <link href="css/blogstyle.css" rel="stylesheet">
         <!--style sheet for the photos etc-->
     <link rel="stylesheet" href="css/photoStyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
