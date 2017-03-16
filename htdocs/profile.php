@@ -125,9 +125,7 @@ else{
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Privacy</li>
                 <li><a href="#" data-toggle="modal" data-target="#visibility">Visibility Settings</a></li>
-                <li><a href="#">Blocking</a></li>
-                <li><a href="#">Photos</a></li>
-                <li><a href="#">Blog Settings</a></li>
+                
               </ul>
             </li>
              
