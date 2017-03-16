@@ -8,7 +8,7 @@ $target_file = $target_dir.basename($_FILES["img"]["name"]); //this is what the 
 $uploadOk = 1; //set var to check if upload complete
 $imageFileType =  pathinfo($target_file,PATHINFO_EXTENSION); //get extension type
 
-$currentUser = 1; // $loadprofile;
+$currentUser = $_SESSION['id'];
 
 if(isset($_POST['album'])){
 	$currentAlbum = $_POST['album'];

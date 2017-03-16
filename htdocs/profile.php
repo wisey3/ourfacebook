@@ -362,7 +362,7 @@ $(document).ready(function() {
     // $mutual = sizeof($mfriends);
         $mutual = findMutual($smaller,$bigger,$dbc);
         }
-        if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0))){
+        if(!(($loadprofile == $_SESSION['id'])||$privacy==3||$status=="accepted"||($privacy==2 && $mutual>0)||$_SESSION['id']==-2)){
          echo "<h3>$name</h3>";
          if($status=="pending"){
          echo"<p>If $name accepts your friend request, you will be able to see their full profile.</p>";
@@ -944,6 +944,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
   $sexp= $rowp['sex'];
   $locationp = $rowp['location'];
   $emailp = $rowp['email'];
+  $educationp = $rowp['education'];
   //$join = date('d / m / Y', strtotime($row['date_joined']));
   //$dob = $row['dob'];
   $privacyp = $rowp['privacy'];
@@ -1037,7 +1038,16 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                             </div>
                         </div>
                     </div
-                       </div>                  
+                       </div>
+                         <div class="form-group">
+                            <div class="col-sm-12">
+                           
+                              <div class="input-group">
+                                <span class="input-group-addon"><span class="fa fa-university"></span></span>
+                                <input id="education" name="education"  class="form-control" type="text" size="16" value="<?php echo $educationp; ?>" required/>
+                            </div>
+                        </div>
+                    </div>                  
                         <div class="form-group">
                             <div class="col-sm-12">
                            
@@ -1047,6 +1057,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
                             </div>
                         </div>
                     </div>
+                  
                     <h3 id="errormessage" style="color:red" class="payment-errors text-center"></h3>
           
                 
