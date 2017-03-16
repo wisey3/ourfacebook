@@ -669,58 +669,21 @@ $("#sn").find("#fcircles").addClass("activejumbo");
        
        
        <!--Put blog stuff here-->
-
-
-        <?php 
-       $user_id = $loadprofile;
-  $query = "SELECT * FROM posts WHERE user_id='".$user_id."' ORDER BY id DESC";
-  $posts = mysqli_query($dbc, $query);
-  echo $posts->num_rows;
-?>
-       
-    <div class="containter ">
-      <header>
-        <?php if($_SESSION['id'] == $loadprofile){?>
-        <h1>My Blog</h1>
-        <?php } ?>
-      </header>
-      <div class = "row" id="posts " class="myblog">
-        <ul>
-          <?php while($row = mysqli_fetch_array($posts,MYSQLI_ASSOC)) : ?>
-            <li id="post<?php echo $row['id']?>" class="post">
-              <span><?php echo $row['title'] ?></span>
-              <span><?php echo $row['date'] ?></span>
-              <?php echo $row['content'] ?>
-              <?php echo $row['id']?>
-
-
-<?php if($_SESSION['id'] == $loadprofile){?>
-
-
-            <form  id="delete-entry-<?php echo $row['id']?>">
-             <input  name="post_id" type="hidden" value="<?php echo $row['id']?>" />
-         <!--- <input id="show-btn" type="submit" name="submit" value="Delete"/> -->
-        </form>
-       
-
-
-<button id="deletepost-<?php echo $row['id']?>" class="delete-post" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
-
 <script>
 
-  var $btn = $('#deletepost-<?php echo $row["id"]?>');
-  console.log(
-      'i am here'
-    );
-  $btn.on("click" , function (e) {
+       $(document).ready(function() {
+        
+          $('body').on('click','.delete-post',function (e) {
     // alert('trying to delete image');
     //count++;
     console.log(
       'i am here too'
     );
      //to stop the rabbit hole multi send loop thing
+     var $myData = 'post_id='+ $(this).attr('id');
+     console.log($myData);
 
-      var $myData = $('#delete-entry-<?php echo $row["id"]?>').serialize();
+      //var $myData = $('#delete-entry-<?php echo $row["id"]?>').serialize();
 
       $(this).closest('li').remove();
 
@@ -738,42 +701,101 @@ $("#sn").find("#fcircles").addClass("activejumbo");
           });
     
   });
+          });
 
 
 
-</script>
+</script> 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                  
+                 function blogsearch(){
+                  $('#posts').remove();
+ 
+                      var title=$("#blog-search").val();
+                      var fid_blog=$("#fid-blog").val();
+ 
+                      if(title!=""){
+
+                        $("#blogresult").html("<img alt='ajax search' />");
+                         $.ajax({
+                            type:"post",
+                            url:"search_blog.php",
+                            data:"title="+title+'&user-id='+fid_blog,
+                            success:function(data){
+                              
+                                $("#blogresult").html(data);
+                                $("#blog-search").val("");
+                             }
+                          });
+                      }
+                       
+ 
+                      
+                 }
+ 
+                  $("#blog-button").on( 'click' , function(){
+                     blogsearch();
+                  });
+ 
+
+            });
+        </script>
 
 
-<!---
-          <script>
-          console.log("hey i exist");
-
-            var $btn = $('#deletepost-<?php //echo $row["id"]?>');
-            $(this).closest('li').remove();
-            $('body').on('click', $btn, function(e) { 
-              count++;
-              console.log("hey i try");
-              if (count ==1) {
-            $.ajax({
-              type: "POST",
-              url: "delete_entry.php",
-              
-              data: $('#delete-entry-<?php //echo $row["id"]?>').serialize(),
-
-              success: function(data) {
-                console.log("hey i work");
-                count=0;
-                            
-    $("#fblog").load(location.href+" #fblog>*","").addClass("activejumbo");
 
 
-                                }
-                            // serializes the form's elements.
-        });
-          }
-    e.preventDefault();// avoid to execute the actual submit of the form.
-});
-</script> -->
+
+
+        <?php 
+  
+  $user_id = $loadprofile;
+    $query = "SELECT * FROM posts WHERE user_id='".$user_id."' ORDER BY id DESC";
+    
+  
+  $posts = mysqli_query($dbc, $query);
+  echo $posts->num_rows;
+?>
+       
+    <div class="containter blog">
+      <header>
+        <?php if($_SESSION['id'] == $loadprofile){?>
+        <h1 id="blog-title">My Blog</h1>
+        <?php } ?>
+
+        <?php if($_SESSION['id'] != $loadprofile){?>
+        <h1>Blog</h1>
+
+          <input type="text" id="blog-search" placeholder="Search Tutorials Here... Ex: Java, Php, Jquery..."/>
+          <input type="hidden" id="fid-blog" value="<?php echo $loadprofile; ?>" />
+             <input type="button" id="blog-button" value="Search" />
+             <ul id="blogresult"></ul>
+      
+        <?php } ?>
+
+      </header>
+      <div class = "row" id="posts" class="myblog">
+        <ul>
+          <?php while($row = mysqli_fetch_array($posts,MYSQLI_ASSOC)) : ?>
+            <li id="post<?php echo $row['id']?>" class="post">
+              <span id="post-title"><?php echo $row['title'] ?></span>
+              <span id="post-date"><?php echo $row['date'] ?></span>
+              <span id="post-content"><?php echo $row['content'] ?></span>
+
+
+<?php if($_SESSION['id'] == $loadprofile){?>
+
+
+            <form  id="delete-entry-<?php echo $row['id']?>">
+             <input  name="post_id" type="hidden" value="<?php echo $row['id']?>" />
+         <!--- <input id="show-btn" type="submit" name="submit" value="Delete"/> -->
+        </form>
+       
+
+
+<button id="<?php echo $row['id']?>" class="delete-post" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
+
 
       <?php } ?>
           <?php endwhile; ?>
@@ -805,11 +827,11 @@ $("#sn").find("#fcircles").addClass("activejumbo");
            <?php } ?>  
        
       </div>
-      
-      
 
-      
-       <script>
+        
+             
+    
+     <script>
       function setURL(url){
           document.getElementById('iframe').src = url;
       }
