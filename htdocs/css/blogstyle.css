@@ -1,8 +1,33 @@
 #blog-title {
-	color: navy!important;
+	color: #337ab7;
+	font-size: 40px;
+	font-weight: 700px;
+	font-family: inherit;
+}
+
+.blog-list {
+	list-style: none;
 }
 
 #post-title {
 	color: gray;
+	font-size: 24px;
+	display: block;
+	text-align: center;
+}
+#post-date {
+	color: gray;
 	font-size: 16px;
+	
+	display: block;
+	text-align: center;
+}
+
+.btn {
+	color: white;
+}
+
+.btn:hover{
+	background-color: #337ab7;
+	color: white;
 }
