@@ -767,7 +767,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         <?php if($_SESSION['id'] != $loadprofile){?>
         <h1>Blog</h1>
 
-          <input type="text" id="blog-search" placeholder="Search Tutorials Here... Ex: Java, Php, Jquery..."/>
+          <input type="text" id="blog-search" placeholder="Search Posts"/>
           <input type="hidden" id="fid-blog" value="<?php echo $loadprofile; ?>" />
              <input type="button" id="blog-button" value="Search" />
              <ul id="blogresult"></ul>
