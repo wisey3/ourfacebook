@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 16, 2017 at 09:46 PM
+-- Generation Time: Mar 16, 2017 at 10:28 PM
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -33,14 +33,6 @@ CREATE TABLE IF NOT EXISTS `album` (
   `viewStatus` varchar(100) NOT NULL DEFAULT 'F',
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `album`
---
-
-INSERT INTO `album` (`albumID`, `albumName`, `userID`, `viewStatus`, `date`) VALUES
-(12, 'saasdfasd', 35, 'F', '2017-03-16 17:52:57'),
-(13, 'asdfsdf', 35, 'E', '2017-03-16 17:53:00');
 
 -- --------------------------------------------------------
 
@@ -109,9 +101,10 @@ INSERT INTO `circles` (`id`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `comment` (
 `id` int(11) NOT NULL,
   `photoID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
   `content` text NOT NULL,
   `date` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -124,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `photo` (
   `albumID` int(10) unsigned NOT NULL,
   `refLoc` text NOT NULL,
   `date` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -178,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
 --
 
 INSERT INTO `Users` (`id`, `name`, `sex`, `dob`, `location`, `education`, `date_joined`, `email`, `password`, `privacy`, `lastActive`) VALUES
-(35, 'Justin Jude', 'Male', '1992-04-01', 'London', 'UCL', '2017-03-16', 'test11@email.com', '$2y$10$URDDJBmObCySBtVBDdFdl.Vu9bBjaHPyYEbIqvbhuhxpLoI508rjW', 3, '2017-03-16 20:46:12');
+(35, 'Justin Jude', 'Male', '1992-04-01', 'London', 'UCL', '2017-03-16', 'test11@email.com', '$2y$10$URDDJBmObCySBtVBDdFdl.Vu9bBjaHPyYEbIqvbhuhxpLoI508rjW', 3, '2017-03-16 21:27:58');
 
 --
 -- Indexes for dumped tables
@@ -266,12 +259,12 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=86;
 -- AUTO_INCREMENT for table `comment`
 --
 ALTER TABLE `comment`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=26;
 --
 -- AUTO_INCREMENT for table `photo`
 --
 ALTER TABLE `photo`
-MODIFY `photoID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+MODIFY `photoID` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT for table `posts`
 --
