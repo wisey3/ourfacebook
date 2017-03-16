@@ -1,5 +1,6 @@
 <?php
   require_once('../db_connect.php');
+  require('safeCrypto.php');
   $function = htmlentities(strip_tags($_POST['function']), ENT_QUOTES);
 	$file = htmlentities(strip_tags($_POST['file']), ENT_QUOTES);
     
@@ -13,7 +14,7 @@
                $lines = file($file);
         	 }
              $log['state'] = count($lines);
-              
+               
         	 break;	
         	 
     	 case ('send'):
@@ -27,8 +28,13 @@
             	
     			 if (preg_match($reg_exUrl, $message, $url)) {
            			$message = preg_replace($reg_exUrl, '<a href="'.$url[0].'" target="_blank">'.$url[0].'</a>', $message);
-    			 } 
-            	 fwrite(fopen($file, 'a'), "<span>". $nickname . "</span>" . $message = str_replace("\n", " ", $message) . "\n"); 
+    			 }
+
+                $string = "<span>". $nickname . "</span>" . $message = str_replace("\n", " ", $message) . "";
+                $key='Wh3nP1zzaRatB3AC0m1ng1b3aL3av1ng'; 
+                $string=convert($string,$key); 
+                fwrite(fopen($file, 'a'), "". $string . "\n" );
+
                  $countq = "SELECT COUNT(circleID) FROM circlechat WHERE circleID=$file";
                  $countr = mysqli_query($dbc,$countq);
                  $row = mysqli_fetch_row($countr);
