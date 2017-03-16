@@ -546,7 +546,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
               }
             }
             else{ //particular circles
-              $query = "SELECT * FROM circlemembership WHERE circleID = (SELECT circleID FROM circles WHERE name = '$vis')";
+              $query= "SELECT * FROM circlemembership WHERE circleID = (SELECT circleID FROM circles WHERE name = '$vis')";
               $result = mysqli_query($dbc,$query);
 
               while($row=mysqli_fetch_array($result)){ //returns a list of all people belonging to that circle
@@ -578,6 +578,9 @@ $("#sn").find("#fcircles").addClass("activejumbo");
             //Open the table and its first row
             echo "<table id='tableCol'>";
             echo "<tr>";
+            if(($albumNo->num_rows==0)&&($owner!=$user)){
+              echo 'No collections to show';
+            }
             while ($album = mysqli_fetch_array($albumNo)) {
 
                 if ($i == $maxcols) {
@@ -969,6 +972,22 @@ $("#sn").find("#fcircles").addClass("activejumbo");
       <div class="modal-body" style="position: relative; left:27%;">
         <input name="content_txt" type="text" id="addText" cols="45" rows="1" placeholder="Enter collection name">
         <button id="addCollection" type="button" class="addItem" data-dismiss="modal">Add</button><!--class="btn btn-default"-->
+        <select class="form-control" id ="visability" style="width:150px;" required>
+          <option value="E">Everybody</option>
+          <option value ="F">Friends</option>
+          <option value="FOF">Friends of Friends</option>
+          <?php
+          $quer = "SELECT * FROM circles WHERE id = (SELECT circleID FROM circleMembership WHERE userID = '$user')";
+          $circles = mysqli_query($dbc,$quer);    
+
+          while ($view = mysqli_fetch_array($circles)) {
+            $circleName = $view['name'];
+            
+            echo "<option value='$circleName'";
+            echo ">".$circleName."</option>";
+          }
+          ?>
+        </select>              
       </div>
     </div>
     

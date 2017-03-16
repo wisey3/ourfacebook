@@ -319,14 +319,22 @@ $(document).ready(function() {
             <div class="modal-body" style="position: relative; left:27%;">
               <input name="content_txt" type="text" id="addText" cols="45" rows="1" placeholder="Enter collection name">
               <button id="addCollection" type="button" class="addItem" data-dismiss="modal">Add</button><!--class="btn btn-default"-->
-              <select class="form-control" id ="visability" style="width:100px;" required>
+              <select class="form-control" id ="visability" style="width:150px;" required>
                 <option value="E">Everybody</option>
                 <option value ="F">Friends</option>
                 <option value="FOF">Friends of Friends</option>
-                <option value ="C">Circle</option>
-              </select>
-              <input name="circle_name" type="text" id="chooseCircle" cols="45" rows="1" placeholder="e.g. Football Team" required>
-              
+                <?php
+                $quer = "SELECT * FROM circles WHERE id = (SELECT circleID FROM circleMembership WHERE userID = '$user')";
+                $circles = mysqli_query($dbc,$quer);    
+
+                while ($view = mysqli_fetch_array($circles)) {
+                  $circleName = $view['name'];
+                  
+                  echo "<option value='$circleName'";
+                  echo ">".$circleName."</option>";
+                }
+                ?>
+              </select>              
             </div>
           </div>
           

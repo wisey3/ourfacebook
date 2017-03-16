@@ -27,6 +27,7 @@ else{
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="css/photoStyle.css">
 
 <script type="text/javascript">
 var count = 0;
@@ -108,7 +109,7 @@ $(document).ready(function(){
 		if(count==1){/*to stop the rabbit hole multi send loop thing*/
 			var toWhere = $(this).attr('id');
 			if(toWhere=='toCollection'){
-				alert('leaving photos');
+				// alert('leaving photos');
 				var myData = 'user='+ <?php echo $user ?>+'&owner='+<?php echo $owner ?>+'&albumId='+<?php echo $albumNum ?>;
 				$.post("collections.php #hola",myData,function(data){
 					$("#collectionBox").html(data);
@@ -193,44 +194,48 @@ $(document).ready(function() {
 
 	<div id="collectionBox" style=" padding: 30px; position:absolute; left:0vw; width:565px;">
 		<!--whole page-->
-		<div id="hi">
+		<div id="hi" style="left:30px;">
 		<a class="backButton" id="toCollection"><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
-      	<br>
-		<div>
-			<h2><strong>Collections ></strong> <i style="font-size: 25px;"><?php echo $name ?></i></h2>
-			<?php if($user==$owner){
-			 echo "<div>";
-				echo "<button id='changeVis' type='button' class='change' data-dismiss='modal'>Save</button>";
-		        echo "<select class='form-control' id ='vis' style='width:100px;' required>";
-					echo "<option value='E'";
-					  if($vis=='E'){
-					  	echo 'selected';}
-						  echo ">Everybody</option>";
-					echo "<option value ='F'";
-					  if($vis=='F'){
-					  	echo 'selected';}
-						  echo ">Friends</option>";
-					echo "<option value='FOF'";
-					if($vis=='FOF'){
-					  	echo 'selected';}
-					  echo ">Friends of Friends</option>";
-		          
+		<?php if($user==$owner){
+		echo "<div' style='position:absolute; top=:-10px; right:10px;'>";
+			echo "<select class='form-control' id ='vis' style='width:150px; float:left;' required>";
+				echo "<option value='' disabled>Change Visibility</option>";
+				echo "<option value='E'";
+				  if($vis=='E'){
+				  	echo 'selected';}
+					  echo ">Everybody</option>";
+				echo "<option value ='F'";
+				  if($vis=='F'){
+				  	echo 'selected';}
+					  echo ">Friends</option>";
+				echo "<option value='FOF'";
+				if($vis=='FOF'){
+				  	echo 'selected';}
+				  echo ">Friends of Friends</option>";
+			  
 
-		          	$quer = "SELECT * FROM circles WHERE id = (SELECT circleID FROM circleMembership WHERE userID = '$user')"; //this will return all circles in which user is a member.  
-					$circles = mysqli_query($dbc,$quer);		
+			  	$quer = "SELECT * FROM circles WHERE id = (SELECT circleID FROM circleMembership WHERE userID = '$user')"; //this will return all circles in which user is a member.  
+				$circles = mysqli_query($dbc,$quer);		
 
-					while ($view = mysqli_fetch_array($circles)) {
-						$circleName = $view['name'];
-						
-						echo "<option value='$circleName'";
-						if($vis==$circleName){echo 'selected';}
-						echo ">".$circleName."</option>";
-					}		          
-		        echo "</select>";
-	        echo "</div>";
-	    	}?>
+				while ($view = mysqli_fetch_array($circles)) {
+					$circleName = $view['name'];
+					
+					echo "<option value='$circleName'";
+					if($vis==$circleName){echo 'selected';}
+					echo ">".$circleName."</option>";
+				}		          
+			echo "</select>";
+			echo "<button id='changeVis' type='button' class='change' data-dismiss='modal' style='height:34px;'>Save</button>";
+		echo "</div>";
+		}
+		else{
+			echo '<br>';
+		}?>
+		<div <?php if($owner==$user){?> style="position:relative; left:30px; top:-30px;"<?php } ?>>
+			<div>
+				<h2><strong>Collections ></strong> <i style="font-size: 25px;"><?php echo $name ?></i></h2>
 
-		</div>
+			</div>
 
 			<div id="collectionGrid" style=" width:500px;">
 				<div>
@@ -245,6 +250,9 @@ $(document).ready(function() {
 					//Open the table and its first row
 					echo "<table id='tablePho'>";
 					echo "<tr>";
+					if(($photos->num_rows==0)&&($owner!=$user)){
+						echo 'No photos to show';
+					}
 					while ($image = mysqli_fetch_array($photos)) {
 
 					    if ($i == $maxcols) {
@@ -335,6 +343,7 @@ $(document).ready(function() {
 				</div>
 			</div>  
 		</div> 
+		</div>
 		<!--Add Photo Modal-->
 		<div class="modal fade" id="addPhot" role="dialog">
 		    <div class="modal-dialog">		    
