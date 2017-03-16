@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
 --
 
 INSERT INTO `Users` (`id`, `name`, `sex`, `dob`, `location`, `education`, `date_joined`, `email`, `password`, `privacy`, `lastActive`) VALUES
-(35, 'Justin Jude', 'Male', '1992-04-01', 'London', 'UCL', '2017-03-16', 'test11@email.com', '$2y$10$URDDJBmObCySBtVBDdFdl.Vu9bBjaHPyYEbIqvbhuhxpLoI508rjW', 3, '2017-03-16 20:46:12');
+(35, 'Justin Jude', 'Male', '1992-04-01', 'London', 'UCL', '2017-03-16', 'test11@email.com', '$2y$10$URDDJBmObCySBtVBDdFdl.Vu9bBjaHPyYEbIqvbhuhxpLoI508rjW', 3, '2017-03-16 20:46:06');
 
 --
 -- Indexes for dumped tables
