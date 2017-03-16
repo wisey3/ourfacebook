@@ -7,7 +7,7 @@ require_once('tablecheck.php');
 if(isset($_POST['user'])&&isset($_POST['albumId'])){
 	$user = $_POST['user'];
 	$albumNum = $_POST['albumId'];
-
+	echo $albumNum;
 	$quer = "SELECT * FROM album WHERE albumID = '".$albumNum."'";
     $album = mysqli_query($dbc,$quer);
     $row = mysqli_fetch_array($album);
@@ -111,7 +111,7 @@ $(document).ready(function(){
 			if(toWhere=='toCollection'){
 				// alert('leaving photos');
 				var myData = 'user='+ <?php echo $user ?>+'&owner='+<?php echo $owner ?>+'&albumId='+<?php echo $albumNum ?>;
-				$.post("collections.php #hola",myData,function(data){
+				$.post("collections.php",myData,function(data){
 					$("#collectionBox").html(data);
 					count = 0;
 				});
@@ -120,7 +120,7 @@ $(document).ready(function(){
 				// alert('leaving image');				
 				// alert('going to collection '+$(this).attr('name')+' or maybe '+<?php echo $albumNum ?>);
 				var myData = 'user='+ <?php echo $user ?>+'&albumId='+$(this).attr('name');
-				$.post("photos.php #hi",myData,function(data){
+				$.post("photos.php",myData,function(data){
 					$("#collectionBox").html(data);
 					count = 0;
 				});

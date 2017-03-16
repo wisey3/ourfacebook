@@ -7,8 +7,7 @@ session_start();
 $view = $_POST['viewStatus'];
 $albumNum = $_POST['albumId'];
 
-
-$quer = "UPDATE album SET viewStatus='$view' WHERE albumID = '$albumNum'";
+$quer = "UPDATE album SET viewStatus='".$view."' WHERE albumID = '".$albumNum."'";
 $album = mysqli_query($dbc,$quer);
 
 ?>

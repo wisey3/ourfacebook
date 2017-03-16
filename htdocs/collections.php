@@ -96,7 +96,7 @@ $(document).ready(function() {
       // alert('looking at album '+$(this).attr('id'));
 
   		var myData = 'user='+ <?php echo $user ?>+'&albumId='+ $(this).attr('id');
-  		$.post("photos.php #hi",myData,function(data){
+  		$.post("photos.php",myData,function(data){
   			$("#collectionBox").html(data);
         count = 0;
   		});

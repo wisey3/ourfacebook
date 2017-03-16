@@ -436,7 +436,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
             if(count==1){ //to stop the rabbit hole multi send loop thing
 
               var myData = 'user='+ <?php echo $_SESSION['id'] ?>+'&albumId='+ $(this).attr('id');
-              $.post("photos.php #hi",myData,function(data){
+              $.post("photos.php",myData,function(data){
                 $("#collectionBox").html(data);
                 count = 0;
               });
