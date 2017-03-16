@@ -668,8 +668,11 @@ $("#sn").find("#fcircles").addClass("activejumbo");
        Blog Posts:
        
        
-       <!--Put blog stuff here-->
-<script>
+      <!--Put blog stuff here-->
+
+
+
+     <script>
 
        $(document).ready(function() {
         
@@ -767,16 +770,16 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         <?php if($_SESSION['id'] != $loadprofile){?>
         <h1>Blog</h1>
 
-          <input type="text" id="blog-search" placeholder="Search Posts"/>
+          <input type="text" id="blog-search" placeholder="Search posts..."/>
           <input type="hidden" id="fid-blog" value="<?php echo $loadprofile; ?>" />
-             <input type="button" id="blog-button" value="Search" />
+             <input type="button" id="blog-button" class="btn" value="Search" />
              <ul id="blogresult"></ul>
       
         <?php } ?>
 
       </header>
       <div class = "row" id="posts" class="myblog">
-        <ul>
+        <ul class="blog-list">
           <?php while($row = mysqli_fetch_array($posts,MYSQLI_ASSOC)) : ?>
             <li id="post<?php echo $row['id']?>" class="post">
               <span id="post-title"><?php echo $row['title'] ?></span>
@@ -794,7 +797,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
        
 
 
-<button id="<?php echo $row['id']?>" class="delete-post" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
+<button id="<?php echo $row['id']?>" class="delete-post btn" type="button" class="btn btn-primary col-sm-12 col-xs-12">Delete</button>
 
 
       <?php } ?>
@@ -818,7 +821,7 @@ $("#sn").find("#fcircles").addClass("activejumbo");
         <?php endif; ?>
         <!-- make a post form and submit it to process.php -->
 
-    <a href="#" data-toggle="modal" data-target="#addNewPost" ><button>Add New Post</button></a>
+    <a href="#" data-toggle="modal" data-target="#addNewPost" ><button class="btn">Add New Post</button></a>
         
 
   
@@ -827,7 +830,6 @@ $("#sn").find("#fcircles").addClass("activejumbo");
            <?php } ?>  
        
       </div>
-
         
              
     
