@@ -242,7 +242,7 @@ $(document).ready(function() {
                   echo "<a class='deleteCol' id='".$albumId."'>";
                     echo "<div id='deleteX'>";
                       //image
-                      echo "<img src='icons/close.png' height='30px' />";
+                      echo "<img src='iconic/close.png' height='30px' />";
                     echo "</div>";
                   echo "</a>";
                 }

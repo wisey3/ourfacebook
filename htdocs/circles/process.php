@@ -34,15 +34,6 @@
                 $key='Wh3nP1zzaRatB3AC0m1ng1b3aL3av1ng'; 
                 $string=convert($string,$key); 
                 fwrite(fopen($file, 'a'), "". $string . "\n" );
-
-                 $countq = "SELECT COUNT(circleID) FROM circlechat WHERE circleID=$file";
-                 $countr = mysqli_query($dbc,$countq);
-                 $row = mysqli_fetch_row($countr);
-                 $number = $row[0];
-                 $number = $number + 1;
-                 $insertq = "INSERT INTO circlechat(circleID, sentFrom, message, circleMessageID) VALUES ('".mysqli_real_escape_string($dbc,$file)."', '".mysqli_real_escape_string($dbc,$nickname)."', '".mysqli_real_escape_string($dbc,$message)."', '".mysqli_real_escape_string($dbc,$number)."')";
-                 $insertr = mysqli_query($dbc,$insertq);
-
     		 }
     		 
         	 break;
