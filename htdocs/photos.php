@@ -96,7 +96,7 @@ $(document).ready(function() {
         	// alert('about to look at this photo which is in album '+<?php echo $albumNum ?>+' or is actually '+$(this).attr('name'));
 
 			var myData = 'user='+<?php echo $user ?>+'&photoId='+$(this).attr('id')+'&album='+$(this).attr('name');
-			$.post("image.php #hey",myData,function(data){
+			$.post("image.php#hey",myData,function(data){
 				$("#collectionBox").html(data);
 				count = 0;
 			});
