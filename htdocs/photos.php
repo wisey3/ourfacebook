@@ -195,7 +195,7 @@ $(document).ready(function() {
 	<div id="collectionBox" style=" padding: 30px; position:absolute; left:0vw; width:565px;">
 		<!--whole page-->
 		<div id="hi" style="left:30px;">
-		<a class="backButton" id="toCollection"><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
+		<a class="backButton" id="toCollection"><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="iconic/backarrow.png"/></div></a>
 		<?php if($user==$owner){
 		echo "<div' style='position:absolute; top=:-10px; right:10px;'>";
 			echo "<select class='form-control' id ='vis' style='width:150px; float:left;' required>";
@@ -275,7 +275,7 @@ $(document).ready(function() {
 					    	echo "<a class='deleteImg' id=".$photoNum.">";
 							    echo "<div id='deleteX'>";
 							    	//image
-							    	echo "<img src='icons/close.png' style='height:30px; ' />";
+							    	echo "<img src='iconic/close.png' style='height:30px; ' />";
 							    echo "</div>";
 						    echo "</a>";
 						}
