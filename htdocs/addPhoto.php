@@ -36,7 +36,7 @@ else{
 function addPhoto(&$target_file,&$currentUser,&$currentAlbum,&$dbc){
 
 	//if success in uploading file to the uploads directory then I need to add a row in the photo table.
-	$sql = "INSERT INTO photo VALUES(DEFAULT,'$currentAlbum','$target_file',CURRENT_TIMESTAMP)";//photoid, albumid, userid, refloc, date
+	$sql = "INSERT INTO photo VALUES(DEFAULT,'$currentAlbum','$currentUser','$target_file',CURRENT_TIMESTAMP)";//photoid, albumid, userid, refloc, date
 	$res = mysqli_query($dbc,$sql);
 
 	$quer = "SELECT MAX(photoID) as lastID FROM photo";
@@ -61,12 +61,12 @@ function addPhoto(&$target_file,&$currentUser,&$currentAlbum,&$dbc){
 
 		    list($width,$height) = getimagesize(''.$photoName.'');
 		    if($width>$height){
-		    	echo "<a class='img' id='".$photoNum."'>";
+		    	echo "<a class='img' id='".$photoNum."' name='".$currentAlbum."'>";
                 	echo "<img src='".$photoName."' height='150px'>";
                 echo "</a>"; //align center vertically
             }
             else{
-            	echo "<a class='img' id='".$photoNum."'>";
+            	echo "<a class='img' id='".$photoNum."' name='".$currentAlbum."'>";
                 	echo "<img src='".$photoName."' width='150px'>";
                 echo "</a>"; //align center horizontally
             }
