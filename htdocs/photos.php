@@ -7,7 +7,7 @@ require_once('tablecheck.php');
 if(isset($_POST['user'])&&isset($_POST['albumId'])){
 	$user = $_POST['user'];
 	$albumNum = $_POST['albumId'];
-	echo $albumNum;
+
 	$quer = "SELECT * FROM album WHERE albumID = '".$albumNum."'";
     $album = mysqli_query($dbc,$quer);
     $row = mysqli_fetch_array($album);
@@ -164,7 +164,9 @@ $(document).ready(function() {
 
 		if(count==1){ //to stop the rabbit hole multi send loop thing
 
-			var myData = 'viewStatus='+$('#vis').val()+'&albumId='+<?php echo $albumNum; ?>;
+			// alert($(this).attr('name'));
+
+			var myData = 'viewStatus='+$('#vis').val()+'&albumId='+$(this).attr('name');
 
 	        $.ajax({
 	            type: "POST", // HTTP method POST or GET
@@ -195,7 +197,7 @@ $(document).ready(function() {
 	<div id="collectionBox" style=" padding: 30px; position:absolute; left:0vw; width:565px;">
 		<!--whole page-->
 		<div id="hi" style="left:30px;">
-		<a class="backButton" id="toCollection"><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="iconic/backarrow.png"/></div></a>
+		<a class="backButton" id="toCollection" ><div style="position:absolute; left:-12px; top:-7px;"><img style="height:30px; opacity:0.5;" src="icons/backarrow.png"/></div></a>
 		<?php if($user==$owner){
 		echo "<div' style='position:absolute; top=:-10px; right:10px;'>";
 			echo "<select class='form-control' id ='vis' style='width:150px; float:left;' required>";
@@ -225,7 +227,7 @@ $(document).ready(function() {
 					echo ">".$circleName."</option>";
 				}		          
 			echo "</select>";
-			echo "<button id='changeVis' type='button' class='change' data-dismiss='modal' style='height:34px;'>Save</button>";
+			echo "<button id='changeVis' type='button' name='$albumNum' class='change' data-dismiss='modal' style='height:34px;'>Save</button>";
 		echo "</div>";
 		}
 		else{
@@ -247,12 +249,13 @@ $(document).ready(function() {
 					$maxcols = 3;
 					$i = 0;
 
+					if(($photos->num_rows==0)&&($owner!=$user)){
+						echo 'The collection "'.$name.'" has no photos';
+					}
+
 					//Open the table and its first row
 					echo "<table id='tablePho'>";
 					echo "<tr>";
-					if(($photos->num_rows==0)&&($owner!=$user)){
-						echo 'No photos to show';
-					}
 					while ($image = mysqli_fetch_array($photos)) {
 
 					    if ($i == $maxcols) {
@@ -275,7 +278,7 @@ $(document).ready(function() {
 					    	echo "<a class='deleteImg' id=".$photoNum.">";
 							    echo "<div id='deleteX'>";
 							    	//image
-							    	echo "<img src='iconic/close.png' style='height:30px; ' />";
+							    	echo "<img src='icons/close.png' style='height:30px; ' />";
 							    echo "</div>";
 						    echo "</a>";
 						}
